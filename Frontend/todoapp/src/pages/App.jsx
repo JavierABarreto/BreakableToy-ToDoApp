@@ -9,6 +9,7 @@ export const App = () => {
     <div>
       <h2>App</h2>
 
+      <button class="btn btn-primary">Primary button</button>
       <button onClick={() => dispatch(greeting())}>Greeting</button>
     </div>
   )
