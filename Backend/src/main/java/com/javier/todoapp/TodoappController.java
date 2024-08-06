@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,22 +26,26 @@ public class TodoappController {
 
   @GetMapping("/todos")
   public ArrayList<Todo> getTodos(
-    @RequestParam(required = false, defaultValue = "default") String sortBy,
+    @RequestParam(required = false, defaultValue = "false") String sortByPriority,
+    @RequestParam(required = false, defaultValue = "false") String sortByDone,
+    @RequestParam(required = false, defaultValue = "false") String sortByUndone,
     @RequestParam(required = false, defaultValue = "default") String getBy,
     @RequestParam(required = false, defaultValue = "asc") String order,
     @RequestParam(required = false, defaultValue = "1") int min,
-    @RequestParam(required = false, defaultValue = "10") int max
+    @RequestParam(required = false, defaultValue = "10") int max,
+    @RequestParam(required = false, defaultValue = "") String text
   ){
-    ArrayList<Todo> todosPage = new ArrayList<Todo>();
+    ArrayList<Todo> filteredTodos = new ArrayList<Todo>();
+    filteredTodos = todosArray;
 
-    if(sortBy.equals("priority")) {
+    if(sortByPriority.equals("true")) {
       ArrayList<Todo> todosPriority = new ArrayList<Todo>();
 
       if(order.toString().equals("asc")) {
         String[] prioritiesArray = new String[]{"Low", "Medium", "High"};
 
         for(String p : prioritiesArray) {
-          for(Todo e : todosPage) {
+          for(Todo e : filteredTodos) {
             if (e.getPriority().equals(p)) {
               todosPriority.add(e);
             }
@@ -52,7 +55,7 @@ public class TodoappController {
         String[] prioritiesArray = new String[]{"High", "Medium", "Low"};
 
         for(String p : prioritiesArray) {
-          for(Todo e : todosPage) {
+          for(Todo e : filteredTodos) {
             if (e.getPriority().equals(p)) {
               todosPriority.add(e);
             }
@@ -60,31 +63,31 @@ public class TodoappController {
         }
       }
 
-      todosPage = todosPriority;
+      filteredTodos = todosPriority;
     }
 
-    if(sortBy.equals("done")) {
+    if(sortByDone.equals("true")) {
       ArrayList<Todo> doneTodos = new ArrayList<Todo>();
 
-      for(Todo e : todosPage) {
+      for(Todo e : filteredTodos) {
         if(e.getStatus()) {
           doneTodos.add(e);
         }
       }
 
-      todosPage = doneTodos;
+      filteredTodos = doneTodos;
     }
 
-    if(sortBy.equals("undone")) {
+    if(sortByUndone.equals("true")) {
       ArrayList<Todo> undoneTodos = new ArrayList<Todo>();
 
-      for(Todo e : todosPage) {
+      for(Todo e : filteredTodos) {
         if(!e.getStatus()) {
           undoneTodos.add(e);
         }
       }
 
-      todosPage = undoneTodos;
+      filteredTodos = undoneTodos;
     }
 
     if(!getBy.equals("default")) {
@@ -92,7 +95,7 @@ public class TodoappController {
 
       switch (getBy) {
         case "Low":
-          for(Todo e : todosPage) {
+          for(Todo e : filteredTodos) {
             if (e.getPriority().equals("Low")) {
               getByArray.add(e);
             }
@@ -100,7 +103,7 @@ public class TodoappController {
           break;
           
         case "Medium":
-          for(Todo e : todosPage) {
+          for(Todo e : filteredTodos) {
             if (e.getPriority().equals("Medium")) {
               getByArray.add(e);
             }
@@ -108,7 +111,7 @@ public class TodoappController {
           break;
       
         default:
-          for(Todo e : todosPage) {
+          for(Todo e : filteredTodos) {
             if (e.getPriority().equals("High")) {
               getByArray.add(e);
             }
@@ -116,18 +119,32 @@ public class TodoappController {
           break;
       }
 
-      todosPage = getByArray;
+      filteredTodos = getByArray;
     }
 
-    if (todosArray.size() < max) {
-      max = todosArray.size();
+    if (!text.equals("")){
+      ArrayList<Todo> getByName = new ArrayList<Todo>();
+
+      for (Todo e : filteredTodos) {
+        if (e.getText().contains(text.toString())){
+          getByName.add(e);
+        }
+      }
+
+      filteredTodos = getByName;
+    }
+
+    if (filteredTodos.size() < max) {
+      max = filteredTodos.size();
     }
     
+    ArrayList<Todo> todos = new ArrayList<Todo>();
+    
     for(int i = min; i <= max; i++) {
-      todosPage.add(todosArray.get(i - 1));
+      todos.add(filteredTodos.get(i - 1));
     }
 
-    return todosPage;
+    return todos;
   }
 
 

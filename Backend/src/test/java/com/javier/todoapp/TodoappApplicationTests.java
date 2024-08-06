@@ -21,7 +21,11 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.lang.reflect.Array;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
+
+import javax.swing.text.DateFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +49,7 @@ class TodoappApplicationTests {
 	@Test
 	void postNewToDo() {
 		// Assert that the API responds to the pet.
-		Todo ToDo = new Todo(1, "asd", "10/10/2024", false, "10/10/2024", "asd", "10/10/2024");
+		Todo ToDo = new Todo(1, "asd", "2025-10-10", false, "2025-10-10", "asd", "2025-10-10");
 
 		ResponseEntity<String> PostResponse = restTemplate.postForEntity("/todos", ToDo, String.class);
 		assertThat(PostResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
