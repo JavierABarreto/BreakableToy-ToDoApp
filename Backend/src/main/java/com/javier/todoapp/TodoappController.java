@@ -2,10 +2,12 @@ package com.javier.todoapp;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.javier.todoapp.todo.*;
@@ -23,9 +25,128 @@ public class TodoappController {
   }
 
   @GetMapping("/todos")
-  public ArrayList<Todo> getTodos(){
-    return todosArray;
+  public ArrayList<Todo> getTodos(
+    @RequestParam(required = false, defaultValue = "false") String sortByPriority,
+    @RequestParam(required = false, defaultValue = "false") String sortByDone,
+    @RequestParam(required = false, defaultValue = "false") String sortByUndone,
+    @RequestParam(required = false, defaultValue = "default") String getBy,
+    @RequestParam(required = false, defaultValue = "asc") String order,
+    @RequestParam(required = false, defaultValue = "1") int min,
+    @RequestParam(required = false, defaultValue = "10") int max,
+    @RequestParam(required = false, defaultValue = "") String text
+  ){
+    ArrayList<Todo> filteredTodos = new ArrayList<Todo>();
+    filteredTodos = todosArray;
+
+    if(sortByPriority.equals("true")) {
+      ArrayList<Todo> todosPriority = new ArrayList<Todo>();
+
+      if(order.toString().equals("asc")) {
+        String[] prioritiesArray = new String[]{"Low", "Medium", "High"};
+
+        for(String p : prioritiesArray) {
+          for(Todo e : filteredTodos) {
+            if (e.getPriority().equals(p)) {
+              todosPriority.add(e);
+            }
+          }
+        }
+      } else {
+        String[] prioritiesArray = new String[]{"High", "Medium", "Low"};
+
+        for(String p : prioritiesArray) {
+          for(Todo e : filteredTodos) {
+            if (e.getPriority().equals(p)) {
+              todosPriority.add(e);
+            }
+          }
+        }
+      }
+
+      filteredTodos = todosPriority;
+    }
+
+    if(sortByDone.equals("true")) {
+      ArrayList<Todo> doneTodos = new ArrayList<Todo>();
+
+      for(Todo e : filteredTodos) {
+        if(e.getStatus()) {
+          doneTodos.add(e);
+        }
+      }
+
+      filteredTodos = doneTodos;
+    }
+
+    if(sortByUndone.equals("true")) {
+      ArrayList<Todo> undoneTodos = new ArrayList<Todo>();
+
+      for(Todo e : filteredTodos) {
+        if(!e.getStatus()) {
+          undoneTodos.add(e);
+        }
+      }
+
+      filteredTodos = undoneTodos;
+    }
+
+    if(!getBy.equals("default")) {
+      ArrayList<Todo> getByArray = new ArrayList<Todo>();
+
+      switch (getBy) {
+        case "Low":
+          for(Todo e : filteredTodos) {
+            if (e.getPriority().equals("Low")) {
+              getByArray.add(e);
+            }
+          }
+          break;
+          
+        case "Medium":
+          for(Todo e : filteredTodos) {
+            if (e.getPriority().equals("Medium")) {
+              getByArray.add(e);
+            }
+          }
+          break;
+      
+        default:
+          for(Todo e : filteredTodos) {
+            if (e.getPriority().equals("High")) {
+              getByArray.add(e);
+            }
+          }
+          break;
+      }
+
+      filteredTodos = getByArray;
+    }
+
+    if (!text.equals("")){
+      ArrayList<Todo> getByName = new ArrayList<Todo>();
+
+      for (Todo e : filteredTodos) {
+        if (e.getText().contains(text.toString())){
+          getByName.add(e);
+        }
+      }
+
+      filteredTodos = getByName;
+    }
+
+    if (filteredTodos.size() < max) {
+      max = filteredTodos.size();
+    }
+    
+    ArrayList<Todo> todos = new ArrayList<Todo>();
+    
+    for(int i = min; i <= max; i++) {
+      todos.add(filteredTodos.get(i - 1));
+    }
+
+    return todos;
   }
+
 
   @PostMapping("/todos")
   public String postMethod(@RequestBody NewTodoRequest request) {
@@ -38,6 +159,7 @@ public class TodoappController {
       return "Please, make sure that all required fields are filled.";
     }
   }
+
 
   @PutMapping("/todos/{id}")
   public String putMethod(@PathVariable int id, @RequestBody NewTodoRequest request) {
@@ -63,6 +185,7 @@ public class TodoappController {
     return "ToDo with id " + id + " has been modified.";
   }
 
+
   @PutMapping("/todos/{id}/done")
   public String putDoneMethod(@PathVariable int id) {
     Todo todo = new Todo(0, null, null, null, null, null, null);
@@ -84,6 +207,7 @@ public class TodoappController {
     return "Todo marked as done!";
   }
 
+
   @PutMapping("/todos/{id}/undone")
   public String putUnoneMethod(@PathVariable int id) {
     Todo todo = new Todo(0, null, null, null, null, null, null);
@@ -104,6 +228,7 @@ public class TodoappController {
       
     return "Todo marked as Undone!";
   }
+  
 
   @PostMapping("/todos/delete/{id}")
   public String postDeleteMethod(@RequestBody PutRequest request) {
