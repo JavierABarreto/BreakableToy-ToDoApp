@@ -1,4 +1,4 @@
 package com.javier.todoapp.todo;
 
-public record PutRequest(int id) {
+public record PutRequest(String id) {
 }
