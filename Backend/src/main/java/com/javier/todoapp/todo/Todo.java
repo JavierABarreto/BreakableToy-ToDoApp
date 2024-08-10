@@ -1,15 +1,15 @@
 package com.javier.todoapp.todo;
 
 public class Todo {
-  private int id;
+  private String id;
   private String text;
-  private String dueDate;
+  private Long dueDate;
   private Boolean status;
-  private String doneDate;
+  private Long doneDate;
   private String priority;
-  private String creationDate;
+  private Long creationDate;
 
-  public Todo(int id, String text, String dueDate, Boolean status, String doneDate, String priority, String creationDate) {
+  public Todo(String id, String text, Long dueDate, Boolean status, Long doneDate, String priority, Long creationDate) {
     this.id = id;
     this.text = text;
     this.dueDate = dueDate;
@@ -19,23 +19,11 @@ public class Todo {
     this.creationDate = creationDate;
   }
 
-  public String toString() {
-    return "{ "
-    + "\'id\'= " + id
-    + "\', \'text\'= \'" + text
-    + "\', \'dueDate\'= \'" + dueDate
-    + "\'', \'status\'= " + status
-    + ", \'doneDate\'= \'" + doneDate
-    + "\', \'priority\'= \'" + priority
-    + "\', \'creationDate\'= " + creationDate
-    + " }";
-  }
-
   public void setText(String text) {
     this.text = text;
   }
 
-  public void setDueDate(String dueDate) {
+  public void setDueDate(Long dueDate) {
     this.dueDate = dueDate;
   }
 
@@ -43,11 +31,15 @@ public class Todo {
     this.status = !status;
   }
 
+  public void setDoneDate(Long doneDate){
+    this.doneDate = doneDate;
+  }
+
   public void setPriority(String priority) {
     this.priority = priority;
   }
 
-  public int getId() {
+  public String getId() {
     return id;
   }
 
@@ -55,19 +47,19 @@ public class Todo {
     return text;
   }
 
-  public String getDueDate() {
+  public Long getDueDate() {
     return dueDate;
   }
   public Boolean getStatus() {
     return status;
   }
-  public String getDoneDate() {
+  public Long getDoneDate() {
     return doneDate;
   }
   public String getPriority() {
     return priority;
   }
-  public String getCreationDate() {
+  public Long getCreationDate() {
     return creationDate;
   }
 }

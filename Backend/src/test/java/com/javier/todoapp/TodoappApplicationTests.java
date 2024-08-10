@@ -24,6 +24,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.swing.text.DateFormatter;
 
@@ -49,7 +50,10 @@ class TodoappApplicationTests {
 	@Test
 	void postNewToDo() {
 		// Assert that the API responds to the pet.
-		Todo ToDo = new Todo(1, "asd", "2025-10-10", false, "2025-10-10", "asd", "2025-10-10");
+		Long dueDate = Long.valueOf(17788000);
+		Long doneDate = Long.valueOf(17788001);
+		Long creationDate = Long.valueOf(17788002);
+		Todo ToDo = new Todo(UUID.randomUUID().toString(), "asd", dueDate, false, doneDate, "asd", creationDate);
 
 		ResponseEntity<String> PostResponse = restTemplate.postForEntity("/todos", ToDo, String.class);
 		assertThat(PostResponse.getStatusCode()).isEqualTo(HttpStatus.OK);

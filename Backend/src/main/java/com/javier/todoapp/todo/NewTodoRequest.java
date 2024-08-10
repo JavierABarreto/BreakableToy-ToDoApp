@@ -1,11 +1,11 @@
 package com.javier.todoapp.todo;
 
 public record NewTodoRequest(
-  int id,
+  String id,
   String text,
-  String dueDate,
+  Long dueDate,
   Boolean status,
-  String doneDate,
+  Long doneDate,
   String priority,
-  String creationDate
+  Long creationDate
 ) {};
