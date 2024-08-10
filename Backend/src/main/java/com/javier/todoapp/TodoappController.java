@@ -2,12 +2,7 @@ package com.javier.todoapp;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -215,7 +210,6 @@ public class TodoappController {
 
   @PutMapping("/todos/{id}")
   public String putMethod(@PathVariable String id, @RequestBody NewTodoRequest request) {
-    Todo todo = new Todo(id, null, null, null, null, null, null);
     int index = 0;
 
     for (int i = 0; i < todosArray.size(); i++) {
@@ -239,7 +233,6 @@ public class TodoappController {
 
   @PutMapping("/todos/{id}/done")
   public String putDoneMethod(@PathVariable String id, @RequestBody SetDoneDate request) {
-    Todo todo = new Todo(id, null, null, null, null, null, null);
     int index = 0;
 
     for (int i = 0; i < todosArray.size(); i++) {

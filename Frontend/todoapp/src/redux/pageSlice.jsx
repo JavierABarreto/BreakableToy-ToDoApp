@@ -5,7 +5,7 @@ const pageSlice = createSlice({
   initialState: {
     flag: true,
     filters: {
-      order: "",
+      order: "dsc",
       getByPriority: "default",
       getByStatus: 0,
       sortByDone: "default",
