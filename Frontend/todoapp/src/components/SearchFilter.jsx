@@ -1,22 +1,28 @@
 import React from 'react'
-import { getTodosByFilters } from '../js/axios'
-import { useDispatch } from 'react-redux'
+import { getTodos } from '../js/axios'
+import { useDispatch, useSelector } from 'react-redux'
 import { setTodosStore } from '../redux/slice'
+import { setFilter } from '../redux/pageSlice'
 
 export const SearchFilter = () => {
   const dispatch = useDispatch()
+  const filters = useSelector(state => state.page.filters)
 
   const search = async () => {
     const text = document.getElementById("inputTextSearchFilter").value
     const priority = document.getElementById("prioritySelectSearchFilter").value
     const status = document.getElementById("statusSelectSearchFilter").value
 
-    const temp = await getTodosByFilters(text, priority, status)
+    dispatch(setFilter({ payload: text, type: "text" }))
+    priority != "default" ? dispatch(setFilter({ payload: priority, type: "getByPriority" })) : dispatch(setFilter({ payload: "default", type: "getByPriority" })) 
+    status != 0 ? dispatch(setFilter({ payload: status, type: "getByStatus" })) : dispatch(setFilter({ payload: 0, type: "getByStatus" }))
+
+    const temp = await getTodos(filters)
     dispatch(setTodosStore(temp))
   }
 
   return (
-    <div className="border w-75 mx-4 mt-4 p-4">
+    <div className="border mx-4 mt-4 p-4">
       <div className="row mb-2">
         <div className="col-1">
           <label htmlFor="inputText" className="col-form-label">Name</label>
@@ -32,11 +38,11 @@ export const SearchFilter = () => {
         </div>
         <div className="col-4">
           <select className="form-select" id="prioritySelectSearchFilter">
-            <option selected value={0} disabled key={"v-d"}>All, High, Medium, Low</option>
-            <option value={0} key={"v-0"}>All</option>
-            <option value={3} key={"v-3"}>High</option>
-            <option value={2} key={"v-2"}>Medium</option>
-            <option value={1} key={"v-1"}>Low</option>
+            <option selected value={"default"} disabled key={"v-d"}>All, High, Medium, Low</option>
+            <option value={"default"} key={"v-0"}>All</option>
+            <option value={"High"} key={"v-3"}>High</option>
+            <option value={"Medium"} key={"v-2"}>Medium</option>
+            <option value={"Low"} key={"v-1"}>Low</option>
           </select>
         </div>
       </div>

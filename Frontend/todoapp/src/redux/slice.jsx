@@ -3,12 +3,16 @@ import { createSlice } from '@reduxjs/toolkit'
 const todosSlice = createSlice({
   name: 'todos',
   initialState: {
-    value: [],
+    values: {
+      todos: [],
+      nPages: 0,
+      currentPage: 1,
+    },
     todo: {}
   },
   reducers: {
     setTodosStore: (state, action) => {
-      state.value = action.payload
+      state.values = action.payload
     },
     setTodo: (state, action) => {
       state.todo = action.payload

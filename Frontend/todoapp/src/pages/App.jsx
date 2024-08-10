@@ -9,20 +9,29 @@ import { ToDoModal } from '../components/ToDoModal';
 import { TAFooter } from '../components/TAFooter';
 import { useSelector, useDispatch } from 'react-redux'
 import { setTodosStore } from '../redux/slice'
-import { setTypeModal } from '../redux/pageSlice'
 import { getTodos } from '../js/axios';
 
 export const App = () => {
-  const todos = useSelector(state => state.todos.value)
+  const todos = useSelector(state => state.todos.values.todos)
   const flag = useSelector(state => state.page.flag)
+  const filters = useSelector(state => state.page.filters)
+  const [type, setType] = useState("")
 
   const dispatch = useDispatch();
 
-  const nElements = todos.length
-
   const setTodos = async () => {
-    const temp = await getTodos()
+    const temp = await getTodos(filters)
     dispatch(setTodosStore(temp));
+  }
+
+  const clearFields = () => {
+    const text = document.getElementById("inputText")
+    const dueDate = document.getElementById("inputDueDate")
+    const priority = document.getElementById("prioritySelect")
+
+    text.value = ""
+    dueDate.value = ""
+    priority.options[0].selected = true
   }
   
   useEffect(() => {
@@ -33,18 +42,22 @@ export const App = () => {
   return (
     <div>
       <Navbar />
-      <ToDoModal />
+      
+      <ToDoModal clearFields={clearFields} type={type}/>
 
       <SearchFilter />
 
       <div className="mx-4 my-3">
         <button type="button" className="btn btn-secondary px-3" data-bs-toggle="modal" data-bs-target="#todoModal"
-                onClick={() => dispatch(setTypeModal("create"))}>+ New To Do</button>
+                onClick={() => {
+                  clearFields()
+                  setType("create")
+                }} >+ New To Do</button>
       </div>
 
-      <ToDoTable data={todos} />
+      <ToDoTable data={todos} setType={setType}/>
 
-      <Pagination nElements={nElements} />
+      <Pagination />
 
       <Stats />
 

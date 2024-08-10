@@ -1,47 +1,53 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { setTodosStore } from '../../redux/slice'
-import { getTodosByLimits } from '../../js/axios'
+import { useDispatch, useSelector } from 'react-redux'
+import { setFilter, setFlag } from '../../redux/pageSlice'
 
-export const Pagination = ({ nElements }) => {
+export const Pagination = () => {
   const dispatch = useDispatch()
-  let [currentPage, setCurrentPage] = useState(1)
-  let min = 1, max = 10;
-
-  const nPages = nElements < 10 ? 1 : Math.round(nElements/10) + 1
+  const nPages = useSelector(state => state.todos.values.nPages)
+  const min = useSelector(state => state.todos.values.min)
+  const max = useSelector(state => state.todos.values.max)
+  const flag = useSelector(state => state.page.flag)
+  const currentPage = useSelector(state => state.todos.values.currentPage)
 
   const pag = () => {
-    const temp = []
+    const pagNums = []
 
     for(let i = 0; i < nPages; i++) {
-      temp.push(<li key={i}><button type="button" className="btn btn-link" onClick={() => setCurrentPage(i + 1)}>{i + 1}</button></li>)
+      pagNums.push(<li key={"pagination-"+(i+1)}><button type="button" className="btn btn-link" 
+                       onClick={() => getTodosByPage(i+1)}>{i+1}</button></li>)
     }
 
-    return temp
+    return pagNums
   }
 
-  const changePage = (direction) => {
-    direction == "n" ?  setCurrentPage(currentPage + 1) : setCurrentPage(direction)
+  const getTodosByPage = async (n) => {
+    let limit = n * 10;
+
+    dispatch(setFilter({ payload: limit, type: "max" }))
+    dispatch(setFilter({ payload: limit - 9, type: "min" }))
+
+    dispatch(setFlag(!flag));
   }
 
-  const getTodosByPage = async () => {
-    max = currentPage * 10;
-    min = max - 9;
-
-    const temp = await getTodosByLimits(max, min)
-    dispatch(setTodosStore(temp));
+  const changePage = async (dir) => {
+    if( dir == "n" ){
+      if (currentPage != nPages) {
+        getTodosByPage(currentPage + 1)
+      }
+    } else {
+      if (currentPage != 1) {
+        getTodosByPage(currentPage - 1)
+      }
+    }
   }
-  
-  useEffect(() => {
-    getTodosByPage()
-  }, [currentPage])
 
   return (
-    <div className="mx-4 mb-3 w-75">
+    <div className="mx-4 mb-3">
       <div className="d-flex justify-content-center">
         <ul className="pagination border px-5 py-3">
           <li>
-            <button type="button" className="btn btn-link" onClick={() => changePage("p")} disabled = { currentPage == 1 ? true : currentPage == nPages ? true : false }>&laquo;</button>
+            <button type="button" className="btn btn-link" onClick={() => changePage("p")} disabled = { currentPage == 1 ? true : false }>&laquo;</button>
           </li>
 
           {

@@ -1,26 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import * as bootstrap from 'bootstrap'
 import moment from 'moment'
 import { createNewTodo, editTodoRequest } from '../js/axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setFlag } from '../redux/pageSlice'
 
-export const ToDoModal = () => {
+export const ToDoModal = ({ clearFields, type }) => {
   const dispatch = useDispatch();
   const flag = useSelector(state => state.page.flag)
-  const type = useSelector(state => state.page.type)
   const todo = useSelector(state => state.todos.todo)
 
-  let text = ""
-  let dueDate = ""
-  let priority = ""
-
   if(type == "edit") {
-    text = todo.text
-    dueDate = todo.dueDate
-    priority = todo.priority
+    const { dueDate, priority, text } = todo
+    let formatedDueDate = dueDate == 0 ? "" : moment.unix(todo.dueDate).format("YYYYY-MM-DDTHH:mm")
 
-    document.getElementById("inputDueDate").value = moment(dueDate, "YYYY-MM-DD").format("YYYY-MM-DDThh:mm")
+    document.getElementById("inputText").value = text
+    document.getElementById("inputDueDate").value = formatedDueDate
     document.getElementById("prioritySelect").value = priority
   }
 
@@ -29,19 +24,20 @@ export const ToDoModal = () => {
     const dueDate = document.getElementById("inputDueDate").value
     const priority = document.getElementById("prioritySelect").value
 
-    if (text != "" && priority != "" && dueDate != "") {
+    if (text != "" && priority != "") {
       const data = {
         text: text,
-        dueDate: moment(dueDate).format("YYYY-MM-DDThh:mm a"),
+        dueDate: dueDate == "" ? 0 : moment(dueDate).format("X"),
         status: false,
-        doneDate: "",
+        doneDate: 0,
         priority: priority,
-        creationDate: moment().format("YYYY-MM-DDThh:mm a")
+        creationDate: moment().format("X")
       }
 
       createNewTodo(data)
-        .then (() => alert("New ToDo created!"))
+
       dispatch(setFlag(!flag));
+      clearFields()
     } else {
       alert("Please make sure to fill out all the fields")
     }
@@ -52,11 +48,11 @@ export const ToDoModal = () => {
     const dueDate = document.getElementById("inputDueDate").value
     const priority = document.getElementById("prioritySelect").value
 
-    if (text != "" && priority != "" && dueDate != "") {
+    if (text != "" && priority != "") {
       const data = {
         id: todo.id,
         text: text,
-        dueDate: moment(dueDate).format("YYYY-MM-DDThh:mm a"),
+        dueDate: dueDate == "" ?  0 : moment(dueDate).format("X"),
         status: todo.status,
         doneDate: todo.doneDate,
         priority: priority,
@@ -64,26 +60,51 @@ export const ToDoModal = () => {
       }
 
       editTodoRequest(data)
-        .then (() => alert("ToDo has been updated!"))
 
       dispatch(setFlag(!flag));
+      clearFields()
     } else {
       alert("Please make sure to fill out all the fields")
     }
   }
-
+  
   return (
     <div className="modal modal" id="todoModal" tabIndex="-1" aria-hidden="true">
       <div className="modal-dialog modal-dialog-centered modal-lg">
         <div className="modal-content">
           <div className="modal-header bg-dark text-white">
             <h1 className="modal-title fs-5">{type == "create" ? "Create new ToDo" : "Edit ToDo"}</h1>
-            <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onClick={() => clearFields()}></button>
           </div>
 
           <div className="modal-body">
             {
               type == "create" ?
+                <>
+                  <div className="mb-4">
+                    <p>Text</p>
+                    <textarea className="w-100" id="inputText" cols={10} maxLength={120} defaultValue={type == "edit" ? todo.text : "" } />
+                  </div>
+
+                  <div className="row mb-4">
+                    <div className="col-6">
+                      <p className="mb-2">Due date:</p>
+                      <input type="datetime-local" id="inputDueDate" min={moment().format("YYYY-MM-DDTHH:mm")}/>
+                    </div>
+
+                    <div className="col-6">
+                      <p className="mb-2">Priority:</p>
+
+                      <select className="form-select" id="prioritySelect">
+                        <option selected disabled value="default">All, High, Medium, Low</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                      </select>
+                    </div>
+                  </div>
+                </>
+              :
                 <>
                   <div className="mb-4">
                     <p>Text</p>
@@ -108,36 +129,11 @@ export const ToDoModal = () => {
                     </div>
                   </div>
                 </>
-              :
-                <>
-                  <div className="mb-4">
-                    <p>Text</p>
-                    <textarea className="w-100" id="inputText" cols={10} maxLength={120} defaultValue={text}/>
-                  </div>
-
-                  <div className="row mb-4">
-                    <div className="col-6">
-                      <p className="mb-2">Due date:</p>
-                      <input type="datetime-local" id="inputDueDate"/>
-                    </div>
-
-                    <div className="col-6">
-                      <p className="mb-2">Priority:</p>
-
-                      <select className="form-select" id="prioritySelect">
-                        <option selected disabled value="default">All, High, Medium, Low</option>
-                        <option value="High">High</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Low">Low</option>
-                      </select>
-                    </div>
-                  </div>
-                </>
             }
           </div>
 
           <div className="modal-footer">
-            <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={() => clearFields()}>Cancel</button>
             {
               type == "create" ?
                 <button type="button" className="btn btn-success" data-bs-dismiss="modal" onClick={() => saveTodo()}>Create ToDo</button>

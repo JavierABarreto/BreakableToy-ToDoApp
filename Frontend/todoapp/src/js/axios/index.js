@@ -2,48 +2,48 @@ import axios from 'axios';
 
 const baseURL = "http://localhost:9090/todos"
 
-export const getTodos = async () => {
-  const response = await axios.get(baseURL)
-  return JSON.parse(JSON.stringify(response.data))
-}
+export const getTodos = async (filtObj) => {
+  const { max, min, text, getByPriority, getByStatus, sortByPriority, sortByDate } = filtObj
 
-export const getTodosByLimits = async (max, min) => {
-  const response = await axios.get(baseURL + `?min=${min}&max=${max}`)
-  return JSON.parse(JSON.stringify(response.data))
-}
-
-export const getTodosByFilters = async (name, priority, status) => {
   let getRequest = baseURL
   let filters = []
 
-  if (name != "") {
-    filters.push("text="+name.toLowerCase())
+  if (text != "") {
+    filters.push("text="+text?.toLowerCase())
   }
   
-  if (Number(priority) != 0) {
-    let p = ""
-
-    switch (Number(priority)) {
-      case 2:
-        p = "Medium"
+  if (getByPriority != "default") {
+    let v = ""
+  
+    switch (getByPriority) {
+      case "Low":
+        v = "Low"
         break;
-
-      case 3:
-        p = "High"
+  
+      case "Medium":
+        v = "Medium"
         break;
     
       default:
-        p = "Low"
+        v = "High"
         break;
     }
-
-    filters.push("getBy="+p)
+  
+    filters.push("getBy="+v)
+  }
+  
+  if (getByStatus != 0) {
+    filters.push( getByStatus == 1 ? "sortByDone=true" : "sortByUndone=true")
   }
 
-  if (status != 0) {
-    filters.push( status == 1 ? "sortByDone=true" : "sortByUndone=true")
+  if(sortByPriority != "default") {
+    filters.push(`sortByPriority=${sortByPriority}`)
   }
 
+  if(sortByDate != "default") {
+    filters.push(`sortByDate=${sortByDate}`)
+  }
+    
   if (filters.length > 0) {
     getRequest += "?"
     
@@ -53,10 +53,15 @@ export const getTodosByFilters = async (name, priority, status) => {
     });
   }
 
+
+  getRequest += `?min=${min}&max=${max}`
+  
   const response = await axios.get(getRequest)
 
   return JSON.parse(JSON.stringify(response.data))
 }
+
+
 
 export const createNewTodo = async (data) => {
   const response = await axios.post(baseURL, data)
@@ -74,12 +79,6 @@ export const deleteTodo = async (data) => {
   const response = await axios.post(`${baseURL}/delete/${data.id}`)
 
   return response.status
-}
-
-export const getTodosSortedByPriority = async (order) => {
-  const response = await axios.get(`${baseURL}?sortByPriority=true&order=${order}`)
-  
-  return JSON.parse(JSON.stringify(response.data))
 }
 
 export const changeTodoStatus = async (data) => {
