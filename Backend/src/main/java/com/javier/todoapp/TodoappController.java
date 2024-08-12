@@ -296,26 +296,17 @@ public class TodoappController {
   }
 
   public String getAvgOfPriority (String priority) {
-    ArrayList<Todo> todosToGetAvg = new ArrayList<Todo>();
     String avg = "";
     double tempTime = 0;
 
     if(priority != "default") {
-      for(Todo e : todosArray) {
-        if (e.getPriority().equals(priority)) {
-          todosToGetAvg.add(e);
-        }
-      }
-
       double time = 0;
       int counter = 0;
 
-      for (int i = 0; i < todosToGetAvg.size(); i++) {
-        Todo tempTodo = todosToGetAvg.get(i);
-
-        if (tempTodo.getStatus().equals(true)) {
+      for(Todo e : todosArray) {
+        if (e.getPriority().equals(priority) && e.getStatus().equals(true)) {
           counter++;
-          double seconds = tempTodo.getDoneDate() - tempTodo.getCreationDate();
+          double seconds = e.getDoneDate() - e.getCreationDate();
           time +=  seconds;
         }
       }
