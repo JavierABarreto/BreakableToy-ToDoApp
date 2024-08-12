@@ -48,7 +48,7 @@ export const App = () => {
       <SearchFilter />
 
       <div className="mx-4 my-3">
-        <button type="button" className="btn btn-secondary px-3" data-bs-toggle="modal" data-bs-target="#todoModal"
+        <button type="button" aria-label className="btn btn-secondary px-3" data-bs-toggle="modal" data-bs-target="#todoModal"
                 onClick={() => {
                   clearFields()
                   setType("create")
