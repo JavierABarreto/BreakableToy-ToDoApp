@@ -150,7 +150,7 @@ public class TodoappController {
       ArrayList<Todo> getByName = new ArrayList<Todo>();
 
       for (Todo e : filteredTodos) {
-        if (e.getText().contains(text.toString())){
+        if (e.getText().toLowerCase().contains(text.toString().toLowerCase())){
           getByName.add(e);
         }
       }

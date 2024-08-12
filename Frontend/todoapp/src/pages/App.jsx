@@ -43,7 +43,7 @@ export const App = () => {
     <div>
       <Navbar />
       
-      <ToDoModal clearFields={clearFields} type={type}/>
+      <ToDoModal clearFields={clearFields} type={type} />
 
       <SearchFilter />
 
