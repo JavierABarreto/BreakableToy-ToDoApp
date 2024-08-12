@@ -165,30 +165,30 @@ public class TodoappController {
     }
     
     ArrayList<Todo> todos = new ArrayList<Todo>();
-    
-    for(int i = min; i <= max; i++) {
-      todos.add(filteredTodos.get(i - 1));
-    }
 
     double nPages = 0;
     double currentPage = 0;
 
-    if (todosArray.size() <= 10) {
+    if (filteredTodos.size() <= 10) {
       currentPage = 1;
     } else {
       currentPage = tempMax / 10;
     }
 
-    if (todosArray.size() <= 10) {
+    if (filteredTodos.size() <= 10) {
       nPages = 1;
     } else {
-      nPages = todosArray.size()/10;
+      nPages = filteredTodos.size()/10;
 
-      if (todosArray.size() % 10 != 0) {
+      if (filteredTodos.size() % 10 != 0) {
         nPages += 1.0;
       }
 
       nPages = Math.ceil(nPages);
+    }
+
+    for(int i = min; i <= max; i++) {
+      todos.add(filteredTodos.get(i - 1));
     }
 
     String avgAllPriorities = getAvgOfPriority("default");
