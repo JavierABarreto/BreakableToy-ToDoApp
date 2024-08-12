@@ -2,8 +2,10 @@ package com.javier.todoapp;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -189,7 +191,9 @@ public class TodoappController {
       nPages = Math.ceil(nPages);
     }
 
-    ReturnRecord data = new ReturnRecord(todos, nPages, currentPage);
+    String avgAllPriorities = getAvgOfPriority("default");
+    avgAllPriorities avgPriorities = new avgAllPriorities(getAvgOfPriority("Low"), getAvgOfPriority("Medium"), getAvgOfPriority("High"));
+    ReturnRecord data = new ReturnRecord(todos, nPages, currentPage, avgAllPriorities, avgPriorities);
     return data;
   }
 
@@ -289,5 +293,100 @@ public class TodoappController {
     }
 
     return "ToDo with id " + (id) + " has been deleted.";
+  }
+
+  public String getAvgOfPriority (String priority) {
+    ArrayList<Todo> todosToGetAvg = new ArrayList<Todo>();
+    String avg = "";
+    double tempTime = 0;
+
+    if(priority != "default") {
+      for(Todo e : todosArray) {
+        if (e.getPriority().equals(priority)) {
+          todosToGetAvg.add(e);
+        }
+      }
+
+      double time = 0;
+      int counter = 0;
+
+      for (int i = 0; i < todosToGetAvg.size(); i++) {
+        Todo tempTodo = todosToGetAvg.get(i);
+
+        if (tempTodo.getStatus().equals(true)) {
+          counter++;
+          double seconds = tempTodo.getDoneDate() - tempTodo.getCreationDate();
+          time +=  seconds;
+        }
+      }
+
+
+      if (time == 0) {
+        avg += "--:--";
+      } else if (time < 60) {
+        tempTime = time / counter;
+      } else if (time < 3600){
+        tempTime = ((time / 60) / counter);
+      } else if (time < 86400) {
+        tempTime = (((time / (60 * 60)) / counter));
+      } else {
+        tempTime = (((time / (60 * 60 * 24)) / counter));
+      }
+
+      tempTime = Math.floor(tempTime);
+
+      if (time == 0) {
+        avg += " ----";
+      } else if (time < 60) {
+        avg += tempTime + " Seconds";
+      } else if (time < 3600){
+        avg += tempTime + " Minutes";
+      } else if (time < 86400) {
+        avg += tempTime + " Hours";
+      } else {
+        avg += tempTime + " Days";
+      }
+    } else {
+      double time = 0;
+      int counter = 0;
+      
+      for (int i = 0; i < todosArray.size(); i++) {
+        Todo tempTodo = todosArray.get(i);
+
+        if (tempTodo.getStatus().equals(true)) {
+          counter++;
+          double seconds = tempTodo.getDoneDate() - tempTodo.getCreationDate();
+          time +=  seconds;
+        }
+      }
+
+      if (time == 0) {
+        avg += "--:--";
+      } else if (time < 60) {
+        tempTime = time / counter;
+      } else if (time < 3600){
+        tempTime = ((time / 60) / counter);
+      } else if (time < 86400) {
+        tempTime = (((time / (60 * 60)) / counter));
+      } else {
+        tempTime = (((time / (60 * 60 * 24)) / counter));
+      }
+
+      tempTime = Math.floor(tempTime);
+
+      if (time == 0) {
+        avg += " ----";
+      } else if (time < 60) {
+        avg += tempTime + " Seconds";
+      } else if (time < 3600){
+        avg += tempTime + " Minutes";
+      } else if (time < 86400) {
+        avg += tempTime + " Hours";
+      } else {
+        avg += tempTime + " Days";
+      }
+    }
+
+    return avg;
   }
 }
