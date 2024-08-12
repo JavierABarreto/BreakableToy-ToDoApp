@@ -25,6 +25,13 @@ export const ToDoModal = ({ clearFields, type }) => {
     const priority = document.getElementById("prioritySelect").value
 
     if (text != "" && priority != "") {
+      if (dueDate != "") {
+        if (moment(dueDate).format("X") < moment().format("X")) {
+          alert("Plese, dont put dates before your current day.")
+
+          return "";
+        }
+      }
       const data = {
         text: text,
         dueDate: dueDate == "" ? 0 : moment(dueDate).format("X"),
@@ -35,8 +42,7 @@ export const ToDoModal = ({ clearFields, type }) => {
       }
 
       createNewTodo(data)
-
-      dispatch(setFlag(!flag));
+        .then(() => dispatch(setFlag(!flag)))
       clearFields()
     } else {
       alert("Please make sure to fill out all the fields")
@@ -49,6 +55,14 @@ export const ToDoModal = ({ clearFields, type }) => {
     const priority = document.getElementById("prioritySelect").value
 
     if (text != "" && priority != "") {
+      if (dueDate != "") {
+        if (moment(dueDate).format("X") < moment().format("X")) {
+          alert("Plese, dont put dates before your current day.")
+
+          return "";
+        }
+      }
+
       const data = {
         id: todo.id,
         text: text,
@@ -60,8 +74,8 @@ export const ToDoModal = ({ clearFields, type }) => {
       }
 
       editTodoRequest(data)
+        .then(() => dispatch(setFlag(!flag)))
 
-      dispatch(setFlag(!flag));
       clearFields()
     } else {
       alert("Please make sure to fill out all the fields")
