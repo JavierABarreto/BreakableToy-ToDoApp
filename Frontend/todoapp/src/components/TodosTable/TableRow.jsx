@@ -68,7 +68,7 @@ export const TableRow = ({ data, setType }) => {
               :
                 <></>
             }
-            <button className="btn btn-secondary" onClick={() => deleteFunction()}>Delete</button>
+            <button className="btn btn-secondary mx-2" onClick={() => deleteFunction()}>Delete</button>
           </>
         }
       </td>

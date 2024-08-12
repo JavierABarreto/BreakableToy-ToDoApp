@@ -7,6 +7,8 @@ const todosSlice = createSlice({
       todos: [],
       nPages: 0,
       currentPage: 1,
+      avgPriorityAll: "",
+      priorities: []
     },
     todo: {}
   },
