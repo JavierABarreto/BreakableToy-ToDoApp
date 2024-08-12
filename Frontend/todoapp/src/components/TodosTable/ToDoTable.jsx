@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { TableRow } from './TableRow'
 import { useDispatch, useSelector } from 'react-redux';
 import { getTodos } from '../../js/axios';
-import { setFilter } from '../../redux/pageSlice';
+import { setFilter, setFlag } from '../../redux/pageSlice';
 import { setTodosStore } from '../../redux/slice';
 
 export const ToDoTable = ({ data, setType }) => {
@@ -11,18 +11,21 @@ export const ToDoTable = ({ data, setType }) => {
 
   const dispatch = useDispatch()
   const filters = useSelector(state => state.page.filters)
+  const flag = useSelector(state => state.page.flag)
 
   const sorter = async (by) => {
     if(by == "priority"){
       dispatch(setFilter({ payload: pOrder, type: "sortByPriority" }))
 
-      const temp = await getTodos(filters);
-      dispatch(setTodosStore(temp))
-    } else {
-      dispatch(setFilter({ payload: dOrder, type: "sortByDate" }))
-
-      const temp = await getTodos(filters);
-      dispatch(setTodosStore(temp))
+      await getTodos(filters)
+        .then((res) => dispatch(setTodosStore(res)))
+        .then(() => dispatch(setFlag(!flag)))
+      } else {
+        dispatch(setFilter({ payload: dOrder, type: "sortByDate" }))
+        
+        await getTodos(filters)
+          .then((res) => dispatch(setTodosStore(res)))
+          .then(() => dispatch(setFlag(!flag)))
     }
 
   }
@@ -45,7 +48,7 @@ export const ToDoTable = ({ data, setType }) => {
                 <button type="button" className="btn" onClick={() => {
                   setDateOrder("default")
                   dispatch(setFilter({ payload: dOrder, type: "sortByDate" }))
-                  setPriorityOrder(pOrder == "asc" ? "dsc" : pOrder == "dsc" ? "default" : "asc")
+                  setPriorityOrder(pOrder == "asc" ? "dsc" : "asc")
                   
                   sorter("priority")
                 }}>
@@ -63,7 +66,7 @@ export const ToDoTable = ({ data, setType }) => {
                 <button type="button" className="btn" onClick={() => {
                     setPriorityOrder("default")
                     dispatch(setFilter({ payload: pOrder, type: "sortByPriority" }))
-                    setDateOrder(dOrder == "asc" ? "dsc" : dOrder == "dsc" ? "default" : "asc")
+                    setDateOrder(dOrder == "asc" ? "dsc" : "asc")
 
                     sorter("date")
                   }}>

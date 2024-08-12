@@ -2,11 +2,12 @@ import React from 'react'
 import { getTodos } from '../js/axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setTodosStore } from '../redux/slice'
-import { setFilter } from '../redux/pageSlice'
+import { setFilter, setFlag } from '../redux/pageSlice'
 
 export const SearchFilter = () => {
   const dispatch = useDispatch()
   const filters = useSelector(state => state.page.filters)
+  const flag = useSelector(state => state.page.flag)
 
   const search = async () => {
     const text = document.getElementById("inputTextSearchFilter").value
@@ -16,9 +17,10 @@ export const SearchFilter = () => {
     dispatch(setFilter({ payload: text, type: "text" }))
     priority != "default" ? dispatch(setFilter({ payload: priority, type: "getByPriority" })) : dispatch(setFilter({ payload: "default", type: "getByPriority" })) 
     status != 0 ? dispatch(setFilter({ payload: status, type: "getByStatus" })) : dispatch(setFilter({ payload: 0, type: "getByStatus" }))
-
-    const temp = await getTodos(filters)
-    dispatch(setTodosStore(temp))
+    
+    await getTodos(filters)
+      .then((res) => dispatch(setTodosStore(res)))
+      .then(() => dispatch(setFlag(!flag)))
   }
 
   return (

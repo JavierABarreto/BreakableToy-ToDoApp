@@ -30,8 +30,7 @@ export const TableRow = ({ data, setType }) => {
     }
 
     changeTodoStatus(data)
-
-    dispatch(setFlag(!flag))
+      .then(() => dispatch(setFlag(!flag)))
   }
 
   let dDate = dueDate == 0 ? "" : moment.unix(dueDate).format("DD-MM-YYYY - hh:mm a")
