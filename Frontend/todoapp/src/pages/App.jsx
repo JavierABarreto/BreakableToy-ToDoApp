@@ -15,6 +15,9 @@ export const App = () => {
   const todos = useSelector(state => state.todos.values.todos)
   const flag = useSelector(state => state.page.flag)
   const filters = useSelector(state => state.page.filters)
+  const avgPriorityAll = useSelector(state => state.todos.values.avgPriorityAll)
+  const priorities = useSelector(state => state.todos.values.priorities)
+
   const [type, setType] = useState("")
 
   const dispatch = useDispatch();
@@ -55,11 +58,11 @@ export const App = () => {
                 }} >+ New To Do</button>
       </div>
 
-      <ToDoTable data={todos} setType={setType}/>
+      <ToDoTable setType={setType} todos={todos}/>
 
       <Pagination />
 
-      <Stats />
+      <Stats avgPriorityAll={avgPriorityAll} priorities={priorities} />
 
       <TAFooter />
     </div>
