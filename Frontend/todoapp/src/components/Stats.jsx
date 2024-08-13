@@ -1,11 +1,7 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
 
 
-export const Stats = () => {
-  const avgPriorityAll = useSelector(state => state.todos.values.avgPriorityAll)
-  const priorities = useSelector(state => state.todos.values.priorities)
-
+export const Stats = ({ avgPriorityAll, priorities }) => {
   return (
     <div className="row mx-4 border px-4 py-2 mb-4">
       <div className="row">
@@ -21,7 +17,7 @@ export const Stats = () => {
 
         <div className="row">
           <div className="col-6 text-center d-flex align-items-center">
-            <p className="flex-fill">{avgPriorityAll}</p>
+            <p className="flex-fill">Avg: {avgPriorityAll}</p>
           </div>
 
           <div className="col-6 text-center">
