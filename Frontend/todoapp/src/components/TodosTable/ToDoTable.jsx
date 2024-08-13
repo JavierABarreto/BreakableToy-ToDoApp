@@ -5,7 +5,7 @@ import { getTodos } from '../../js/axios';
 import { setFilter, setFlag } from '../../redux/pageSlice';
 import { setTodosStore } from '../../redux/slice';
 
-export const ToDoTable = ({ data, setType }) => {
+export const ToDoTable = ({ todos, setType }) => {
   const [pOrder, setPriorityOrder] = useState("default");
   const [dOrder, setDateOrder] = useState("asc");
 
@@ -86,7 +86,7 @@ export const ToDoTable = ({ data, setType }) => {
         
         <tbody>
           {
-            data?.map((todo, index) => {
+            todos?.map((todo, index) => {
               return <TableRow data={todo} key={index} setType={setType} />
             })
           }

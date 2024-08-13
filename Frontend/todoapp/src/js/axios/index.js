@@ -3,70 +3,78 @@ import axios from 'axios';
 const baseURL = "http://localhost:9090/todos"
 
 export const getTodos = async (filtObj) => {
-  const { max, min, text, getByPriority, getByStatus, sortByPriority, sortByDate } = filtObj
+  try {
+    const { max, min, text, getByPriority, getByStatus, sortByPriority, sortByDate } = filtObj
 
-  let getRequest = baseURL
-  let filters = []
-
-  if (text != "") {
-    filters.push("text="+text?.toLowerCase())
-  }
+    let getRequest = baseURL
+    let filters = []
   
-  if (getByPriority != "default") {
-    let v = ""
-  
-    switch (getByPriority) {
-      case "Low":
-        v = "Low"
-        break;
-  
-      case "Medium":
-        v = "Medium"
-        break;
+    if (text != "") {
+      filters.push("text="+text?.toLowerCase())
+    }
     
-      default:
-        v = "High"
-        break;
+    if (getByPriority != "default") {
+      let v = ""
+    
+      switch (getByPriority) {
+        case "Low":
+          v = "Low"
+          break;
+    
+        case "Medium":
+          v = "Medium"
+          break;
+      
+        default:
+          v = "High"
+          break;
+      }
+    
+      filters.push("getBy="+v)
+    }
+    
+    if (getByStatus != 0) {
+      filters.push( getByStatus == 1 ? "sortByDone=true" : "sortByUndone=true")
     }
   
-    filters.push("getBy="+v)
-  }
+    if(sortByPriority != "default") {
+      filters.push(`sortByPriority=${sortByPriority}`)
+    }
   
-  if (getByStatus != 0) {
-    filters.push( getByStatus == 1 ? "sortByDone=true" : "sortByUndone=true")
-  }
-
-  if(sortByPriority != "default") {
-    filters.push(`sortByPriority=${sortByPriority}`)
-  }
-
-  if(sortByDate != "default") {
-    filters.push(`sortByDate=${sortByDate}`)
-  }
-    
-  if (filters.length > 0) {
-    getRequest += "?"
-    
-    filters.forEach(element => {
-      getRequest += element
-      getRequest += "&"
-    });
-  }
-
-
-  getRequest += `?min=${min}&max=${max}`
+    if(sortByDate != "default") {
+      filters.push(`sortByDate=${sortByDate}`)
+    }
+      
+    if (filters.length > 0) {
+      getRequest += "?"
+      
+      filters.forEach(element => {
+        getRequest += element
+        getRequest += "&"
+      });
+    }
   
-  const response = await axios.get(getRequest)
-
-  return JSON.parse(JSON.stringify(response.data))
+  
+    getRequest += `?min=${min}&max=${max}`
+    
+    const response = await axios.get(getRequest)
+  
+    return JSON.parse(JSON.stringify(response.data))
+  } catch (e) {
+    throw new Error(e);
+  }
 }
 
 
 
 export const createNewTodo = async (data) => {
-  const response = await axios.post(baseURL, data)
+  try {
+    const response = await axios.post(baseURL, data)
 
-  return response.status
+    return response.status
+  } catch (error) {
+    throw new Error(error)
+  }
 }
 
 export const editTodoRequest = async (data) => {

@@ -96,19 +96,18 @@ export const ToDoModal = ({ clearFields, type }) => {
               type == "create" ?
                 <>
                   <div className="mb-4">
-                    <p>Text</p>
+                    <label htmlFor="inputText">Text:</label>
                     <textarea className="w-100" id="inputText" cols={10} maxLength={120} defaultValue={type == "edit" ? todo.text : "" } />
                   </div>
 
                   <div className="row mb-4">
                     <div className="col-6">
-                      <p className="mb-2">Due date:</p>
-                      <input type="datetime-local" id="inputDueDate" min={moment().format("YYYY-MM-DDTHH:mm")}/>
+                      <label className="form-label" htmlFor="inputDueDate">Due date:</label>
+                      <input className="form-control" type="datetime-local" id="inputDueDate" min={moment().format("YYYY-MM-DDTHH:mm")}/>
                     </div>
 
                     <div className="col-6">
-                      <p className="mb-2">Priority:</p>
-
+                      <label className="mb-2" htmlFor="prioritySelect">Priority:</label>
                       <select className="form-select" id="prioritySelect">
                         <option selected disabled value="default">All, High, Medium, Low</option>
                         <option value="High">High</option>
@@ -121,18 +120,18 @@ export const ToDoModal = ({ clearFields, type }) => {
               :
                 <>
                   <div className="mb-4">
-                    <p>Text</p>
+                    <label htmlFor="inputText">Text:</label>
                     <textarea className="w-100" id="inputText" cols={10} maxLength={120} />
                   </div>
 
                   <div className="row mb-4">
                     <div className="col-6">
-                      <p className="mb-2">Due date:</p>
+                      <label className="form-label" htmlFor="inputDueDate">Due date:</label>
                       <input type="datetime-local" id="inputDueDate"/>
                     </div>
 
                     <div className="col-6">
-                      <p className="mb-2">Priority:</p>
+                      <label className="form-label" htmlFor="prioritySelect">Priority:</label>
 
                       <select className="form-select" id="prioritySelect">
                         <option selected disabled value="default">All, High, Medium, Low</option>
