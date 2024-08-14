@@ -331,86 +331,56 @@ public class TodoappController {
   }
 
   public String getAvgOfPriority (String priority) {
+    System.out.println("-----------------");
     String avg = "";
-    double tempTime = 0;
+    double tempTimee = 0;
+    double Timee = 0;
+    int counter = 0;
 
     if(priority != "default") {
-      double time = 0;
-      int counter = 0;
-
       for(Todo e : todosArray) {
         if (e.getPriority().equals(priority) && e.getStatus().equals(true)) {
           counter++;
           double seconds = e.getDoneDate() - e.getCreationDate();
-          time +=  seconds;
+          Timee +=  seconds;
         }
       }
-
-
-      if (time == 0) {
-        avg += "--:--";
-      } else if (time < 60) {
-        tempTime = time / counter;
-      } else if (time < 3600){
-        tempTime = ((time / 60) / counter);
-      } else if (time < 86400) {
-        tempTime = (((time / (60 * 60)) / counter));
-      } else {
-        tempTime = (((time / (60 * 60 * 24)) / counter));
-      }
-
-      tempTime = Math.floor(tempTime);
-
-      if (time == 0) {
-        avg += " ----";
-      } else if (time < 60) {
-        avg += tempTime + " Seconds";
-      } else if (time < 3600){
-        avg += tempTime + " Minutes";
-      } else if (time < 86400) {
-        avg += tempTime + " Hours";
-      } else {
-        avg += tempTime + " Days";
-      }
     } else {
-      double time = 0;
-      int counter = 0;
-      
       for (int i = 0; i < todosArray.size(); i++) {
         Todo tempTodo = todosArray.get(i);
 
         if (tempTodo.getStatus().equals(true)) {
           counter++;
           double seconds = tempTodo.getDoneDate() - tempTodo.getCreationDate();
-          time +=  seconds;
+          Timee +=  seconds;
         }
       }
+    }
 
-      if (time == 0) {
-        avg += "--:--";
-      } else if (time < 60) {
-        tempTime = time / counter;
-      } else if (time < 3600){
-        tempTime = ((time / 60) / counter);
-      } else if (time < 86400) {
-        tempTime = (((time / (60 * 60)) / counter));
-      } else {
-        tempTime = (((time / (60 * 60 * 24)) / counter));
-      }
+    if (Timee == 0) {
+      avg += "--:--";
+    } else if (Timee < 60.0) {
+      tempTimee = Timee / counter;
+    } else if (Timee < 3600.0){
+      tempTimee = ((Timee / 60) / counter);
+    } else if (Timee < 86400.0) {
+      tempTimee = (((Timee / (60 * 60)) / counter));
+    } else {
+      tempTimee = (((Timee / (60 * 60 * 24)) / counter));
+    }
+    
+    tempTimee = Math.floor(tempTimee);
 
-      tempTime = Math.floor(tempTime);
-
-      if (time == 0) {
-        avg += " ----";
-      } else if (time < 60) {
-        avg += tempTime + " Seconds";
-      } else if (time < 3600){
-        avg += tempTime + " Minutes";
-      } else if (time < 86400) {
-        avg += tempTime + " Hours";
-      } else {
-        avg += tempTime + " Days";
-      }
+    if (Timee == 0) {
+      avg += " ----";
+    } else if (Timee < 60) {
+      avg += tempTimee + " Seconds";
+    } else if (Timee < 3600){
+      avg += tempTimee + " Minutes";
+    } else if (Timee < 86400) {
+      avg += tempTimee + " Hours";
+    } else {
+      avg += tempTimee + " Days";
     }
 
     return avg;
