@@ -127,7 +127,7 @@ export const ToDoModal = ({ clearFields, type }) => {
                   <div className="row mb-4">
                     <div className="col-6">
                       <label className="form-label" htmlFor="inputDueDate">Due date:</label>
-                      <input type="datetime-local" id="inputDueDate"/>
+                      <input className="form-control" type="datetime-local" id="inputDueDate"/>
                     </div>
 
                     <div className="col-6">
