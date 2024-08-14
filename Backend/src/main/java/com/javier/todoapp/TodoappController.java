@@ -2,6 +2,7 @@ package com.javier.todoapp;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Time;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -191,9 +192,9 @@ public class TodoappController {
       todos.add(filteredTodos.get(i - 1));
     }
 
-    String avgAllPriorities = getAvgOfPriority("default");
+    double avgPriority = getAvgOfPriority("default");
     avgAllPriorities avgPriorities = new avgAllPriorities(getAvgOfPriority("Low"), getAvgOfPriority("Medium"), getAvgOfPriority("High"));
-    ReturnRecord data = new ReturnRecord(todos, nPages, currentPage, avgAllPriorities, avgPriorities);
+    ReturnRecord data = new ReturnRecord(todos, nPages, currentPage, avgPriority, avgPriorities);
     return data;
   }
 
@@ -330,10 +331,7 @@ public class TodoappController {
     }
   }
 
-  public String getAvgOfPriority (String priority) {
-    System.out.println("-----------------");
-    String avg = "";
-    double tempTimee = 0;
+  public double getAvgOfPriority (String priority) {
     double Timee = 0;
     int counter = 0;
 
@@ -357,32 +355,11 @@ public class TodoappController {
       }
     }
 
-    if (Timee == 0) {
-      avg += "--:--";
-    } else if (Timee < 60.0) {
-      tempTimee = Timee / counter;
-    } else if (Timee < 3600.0){
-      tempTimee = ((Timee / 60) / counter);
-    } else if (Timee < 86400.0) {
-      tempTimee = (((Timee / (60 * 60)) / counter));
-    } else {
-      tempTimee = (((Timee / (60 * 60 * 24)) / counter));
-    }
-    
-    tempTimee = Math.floor(tempTimee);
-
-    if (Timee == 0) {
-      avg += " ----";
-    } else if (Timee < 60) {
-      avg += tempTimee + " Seconds";
-    } else if (Timee < 3600){
-      avg += tempTimee + " Minutes";
-    } else if (Timee < 86400) {
-      avg += tempTimee + " Hours";
-    } else {
-      avg += tempTimee + " Days";
+    double seconds = Timee / counter;
+    if (Double.isNaN(seconds)) {
+      return 0;
     }
 
-    return avg;
+    return seconds;
   }
 }

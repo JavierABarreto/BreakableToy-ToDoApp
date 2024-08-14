@@ -6,7 +6,7 @@ public record ReturnRecord(
   ArrayList<Todo> todos,
   double nPages,
   double currentPage,
-  String avgPriorityAll,
+  double avgPriorityAll,
   avgAllPriorities priorities
 ) {
 }
