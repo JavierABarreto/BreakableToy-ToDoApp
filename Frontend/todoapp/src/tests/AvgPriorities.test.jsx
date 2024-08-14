@@ -13,11 +13,11 @@ describe("ToDo tests", () => {
   })
 
   const data = {
-    avgPriorityAll: '--:-- ----',
+    avgPriorityAll: 0,
     priorities: {
-      avgPriorityLow: '--:-- ----',
-      avgPriorityMedium: '--:-- ----',
-      avgPriorityHigh: '--:-- ----'
+      avgPriorityLow: 0,
+      avgPriorityMedium: 0,
+      avgPriorityHigh: 0
     }
   }
 
@@ -89,7 +89,7 @@ describe("ToDo tests", () => {
     )
 
     expect(screen.getByText(/Average time to finish by priority:/i)).toBeVisible()
-    expect(screen.getByText(/Low: 4 Minutes/i)).toBeVisible()
+    expect(screen.getByText(/Low: 04:10 Minutes/i)).toBeVisible()
   })
 
   it("Get AVG of ToDos with priority Medium", async () => {
@@ -103,7 +103,7 @@ describe("ToDo tests", () => {
     )
 
     expect(screen.getByText(/Average time to finish by priority:/i)).toBeVisible()
-    expect(screen.getByText(/Medium: 20 Seconds/i)).toBeVisible()
+    expect(screen.getByText(/Medium: 00:20 minutes/i)).toBeVisible()
   })
 
   it("Get AVG of ToDos with priority High", async () => {
@@ -117,7 +117,7 @@ describe("ToDo tests", () => {
     )
 
     expect(screen.getByText(/Average time to finish by priority:/i)).toBeVisible()
-    expect(screen.getByText(/High: 2 Minutes/i)).toBeVisible()
+    expect(screen.getByText(/High: 02:30 minutes/i)).toBeVisible()
   })
 
   it("Get AVG of all ToDos", async () => {
@@ -131,6 +131,6 @@ describe("ToDo tests", () => {
     )
 
     expect(screen.getByText(/Average time to fiinsh tasks:/i)).toBeVisible()
-    expect(screen.getByText(/Avg: 2 Minutes/i)).toBeDefined();
+    expect(screen.getByText(/Avg: 02:20 minutes/i)).toBeDefined();
   })
 })
