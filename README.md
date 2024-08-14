@@ -19,9 +19,11 @@ This project consists on create a To Do app that let the user perform a CRUD, th
 How to install the project in your local:
 1. Clone the project.
 2. Open two terminals.
-3. In one terminal go to PROJECT > Backend  and run `./mvnw spring-boot:run`
-4. Then in the other terminal go to PROJECT > Frontend > todoapp and run `npm install` for install all the dependencies.
-6. Run `npm run start` to start the project on dev mode and that's it :3.
+3. In one terminal go to PROJECT > Backend
+4. Run `./mvnw spring-boot:run`
+5. Then in the other terminal go to PROJECT > Frontend > todoapp
+6. Run `npm install` for install all the dependencies.
+7. Run `npm run start` to start the project!
 
 ## Tests 🔍
 To run the tests follow the next steps!
