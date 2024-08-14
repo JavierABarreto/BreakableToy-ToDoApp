@@ -214,85 +214,120 @@ public class TodoappController {
 
   @PutMapping("/todos/{id}")
   public String putMethod(@PathVariable String id, @RequestBody NewTodoRequest request) {
-    int index = 0;
+    if(!id.toString().toString().equals("") && !request.text().toString().equals("") && !request.priority().toString().equals("default")) {
+      int index = 0;
 
-    for (int i = 0; i < todosArray.size(); i++) {
-      Todo tempTodo = todosArray.get(i);
+      for (int i = 0; i < todosArray.size(); i++) {
+        Todo tempTodo = todosArray.get(i);
+        
+        if (tempTodo.getId().toString().equals(id.toString())) {
+          index = i;
+  
+          tempTodo.setText(request.text());
+          tempTodo.setPriority(request.priority());
+          tempTodo.setDueDate(request.dueDate());
       
-      if (tempTodo.getId().toString().equals(id.toString())) {
-        index = i;
-
-        tempTodo.setText(request.text());
-        tempTodo.setPriority(request.priority());
-        tempTodo.setDueDate(request.dueDate());
-    
-        todosArray.set(index, tempTodo);
-        break;
+          todosArray.set(index, tempTodo);
+          break;
+        }
       }
+  
+      return "ToDo with id " + id + " has been modified.";
+    } else {
+      return "Make sure to provide the correct id and make sure that the fields of the new information arent empty";
     }
-
-    return "ToDo with id " + id + " has been modified.";
   }
 
 
   @PutMapping("/todos/{id}/done")
   public String putDoneMethod(@PathVariable String id, @RequestBody SetDoneDate request) {
-    int index = 0;
+    if (!id.toString().equals("")) {
+      int index = 0;
+      Boolean flag = false;
 
-    for (int i = 0; i < todosArray.size(); i++) {
-      Todo tempTodo = todosArray.get(i);
-      
-      if (tempTodo.getId().toString().equals(id.toString())) {
-        tempTodo.setStatus();
-        tempTodo.setDoneDate(request.doneDate());
-        index = i;
+      for (int i = 0; i < todosArray.size(); i++) {
+        Todo tempTodo = todosArray.get(i);
+        
+        if (tempTodo.getId().toString().equals(id.toString())) {
+          tempTodo.setStatus();
+          tempTodo.setDoneDate(request.doneDate());
+          index = i;
 
-        todosArray.set(index, tempTodo);
-        break;
+          todosArray.set(index, tempTodo);
+          flag = !flag;
+          break;
+        }
       }
+        
+      if (flag) {
+        return "Todo marked as done!";
+      } else {
+        return "Couln't find the Todo with the id: " + id;
+      }
+    } else {
+      return "Please, provide an id";
     }
-      
-    return "Todo marked as done!";
   }
 
 
   @PutMapping("/todos/{id}/undone")
   public String putUnoneMethod(@PathVariable String id) {
-    Todo todo = new Todo(id, null, null, null, null, null, null);
-    int index = 0;
+    if (!id.toString().equals("")){
+      Todo todo = new Todo(id, null, null, null, null, null, null);
+      int index = 0;
+      Boolean flag = false;
 
-    for (int i = 0; i < todosArray.size(); i++) {
-      Todo tempTodo = todosArray.get(i);
-      
-      if (tempTodo.getId().toString().equals(id.toString())) {
-        tempTodo.setStatus();
-        tempTodo.setDoneDate(Long.valueOf(0));
-        index = i;
+      for (int i = 0; i < todosArray.size(); i++) {
+        Todo tempTodo = todosArray.get(i);
+        
+        if (tempTodo.getId().toString().equals(id.toString())) {
+          tempTodo.setStatus();
+          tempTodo.setDoneDate(Long.valueOf(0));
+          index = i;
 
-        todosArray.set(index, tempTodo);
-        break;
+          todosArray.set(index, tempTodo);
+          flag = !flag;
+          break;
+        }
       }
-    }
 
-    todo.setStatus();
-    todosArray.set(index, todo);
+      todo.setStatus();
+      todosArray.set(index, todo);
       
-    return "Todo marked as Undone!";
+      if (flag) {
+        return "Todo marked as Undone!";
+      } else {
+        return "Couln't find the Todo with the id: " + id;
+      }
+    } else {
+      return "Please, provide an id";
+    }
   }
   
 
   @PostMapping("/todos/delete/{id}")
   public String postDeleteMethod(@PathVariable String id) {
-    for (int i = 0; i < todosArray.size(); i++) {
-      Todo tempTodo = todosArray.get(i);
+    if (!id.toString().equals("")) {
+      Boolean flag = false;
 
-      if (tempTodo.getId().equals(id)) {
-        todosArray.remove(tempTodo);
-        break;
+      for (int i = 0; i < todosArray.size(); i++) {
+        Todo tempTodo = todosArray.get(i);
+  
+        if (tempTodo.getId().equals(id)) {
+          todosArray.remove(tempTodo);
+          flag = !flag;
+          break;
+        }
       }
+  
+      if (flag) {
+        return "ToDo with id " + (id) + " has been deleted.";
+      } else {
+        return "Couln't find the Todo with the id: " + id;
+      }
+    } else {
+      return "Please, provide an id";
     }
-
-    return "ToDo with id " + (id) + " has been deleted.";
   }
 
   public String getAvgOfPriority (String priority) {
