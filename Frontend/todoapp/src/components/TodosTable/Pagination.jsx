@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setFilter, setFlag } from '../../redux/pageSlice'
 
 export const Pagination = () => {
   const dispatch = useDispatch()
   const nPages = useSelector(state => state.todos.values.nPages)
-  const min = useSelector(state => state.todos.values.min)
-  const max = useSelector(state => state.todos.values.max)
   const flag = useSelector(state => state.page.flag)
   const currentPage = useSelector(state => state.todos.values.currentPage)
 

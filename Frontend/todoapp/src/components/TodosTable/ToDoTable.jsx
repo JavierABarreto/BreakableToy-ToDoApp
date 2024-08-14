@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { TableRow } from './TableRow'
 import { useDispatch, useSelector } from 'react-redux';
 import { getTodos } from '../../js/axios';

@@ -10,7 +10,6 @@ import { TAFooter } from '../components/TAFooter';
 import { useSelector, useDispatch } from 'react-redux'
 import { setTodosStore } from '../redux/slice'
 import { getTodos } from '../js/axios';
-import moment from 'moment';
 
 export const App = () => {
   const todos = useSelector(state => state.todos.values.todos)
