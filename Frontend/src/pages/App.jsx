@@ -26,16 +26,6 @@ export const App = () => {
     const temp = await getTodos(filters)
     dispatch(setTodosStore(temp));
   }
-
-  const clearFields = () => {
-    const text = document.getElementById("inputText")
-    const dueDate = document.getElementById("inputDueDate")
-    const priority = document.getElementById("prioritySelect")
-
-    text.value = ""
-    dueDate.value = ""
-    priority.options[0].selected = true
-  }
   
   useEffect(() => {
     setTodos()
@@ -46,14 +36,13 @@ export const App = () => {
     <div>
       <Navbar />
       
-      <ToDoModal clearFields={clearFields} type={type} />
+      <ToDoModal type={type} />
 
       <SearchFilter />
 
       <div className="mx-4 my-3">
         <button type="button" aria-label className="btn btn-secondary px-3" data-bs-toggle="modal" data-bs-target="#todoModal"
                 onClick={() => {
-                  clearFields()
                   setType("create")
                 }} >+ New To Do</button>
       </div>

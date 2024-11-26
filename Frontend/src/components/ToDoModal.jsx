@@ -5,7 +5,7 @@ import { createNewTodo, editTodoRequest } from '../js/axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setFlag } from '../redux/pageSlice'
 
-export const ToDoModal = ({ clearFields, type }) => {
+export const ToDoModal = ({ type }) => {
   const dispatch = useDispatch();
   const flag = useSelector(state => state.page.flag)
   const todo = useSelector(state => state.todos.todo)
@@ -21,6 +21,12 @@ export const ToDoModal = ({ clearFields, type }) => {
       setPriority(todo.priority);
     }
   }, [type, todo])
+
+  const clearFields = () => {
+    setText('');
+    setDueDate('');
+    setPriority('');
+  }
 
   const validateForm = () => {
     if (!text || !priority) {
@@ -63,8 +69,8 @@ export const ToDoModal = ({ clearFields, type }) => {
 
     updateTodo(data).then(() => {
       dispatch(setFlag(!flag));
-      clearFields();
     });
+    clearFields()
   };
 
   return (

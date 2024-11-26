@@ -1,72 +1,54 @@
 import axios from 'axios';
 
 const baseURL = "http://localhost:9090/todos"
+const PRIORITY_DEFAULT = "default";
+const STATUS_DONE = 1;
+
+const getPriorityValue = (priority) => {
+  switch (priority) {
+    case "Low":
+      return "Low";
+    case "Medium":
+      return "Medium";
+    default:
+      return "High";
+  }
+};
+
+const buildFilters = ({ text = "", getByPriority = PRIORITY_DEFAULT, getByStatus = 0, sortByPriority = PRIORITY_DEFAULT, sortByDate }) => {
+  const filters = [];
+
+  if (text) {
+    filters.push(`text=${text.toLowerCase()}`);
+  }
+
+  if (getByPriority !== PRIORITY_DEFAULT) {
+    filters.push(`getBy=${getPriorityValue(getByPriority)}`);
+  }
+
+  if (getByStatus !== 0) {
+    filters.push(getByStatus === STATUS_DONE ? "sortByDone=true" : "sortByUndone=true");
+  }
+
+  if (sortByPriority !== PRIORITY_DEFAULT) {
+    filters.push(`sortByPriority=${sortByPriority}`);
+  }
+
+  return filters;
+};
 
 export const getTodos = async (filtObj) => {
   try {
-    const { max, min, text, getByPriority, getByStatus, sortByPriority, sortByDate } = filtObj
-
-    let getRequest = baseURL
-    let filters = []
-  
-    if (text != "") {
-      filters.push("text="+text?.toLowerCase())
-    }
-    
-    if (getByPriority != "default") {
-      let v = ""
-    
-      switch (getByPriority) {
-        case "Low":
-          v = "Low"
-          break;
-    
-        case "Medium":
-          v = "Medium"
-          break;
-      
-        default:
-          v = "High"
-          break;
-      }
-    
-      filters.push("getBy="+v)
-    }
-    
-    if (getByStatus != 0) {
-      filters.push( getByStatus == 1 ? "sortByDone=true" : "sortByUndone=true")
-    }
-  
-    if(sortByPriority != "default") {
-      filters.push(`sortByPriority=${sortByPriority}`)
-    }
-  
-    if(sortByDate != "default") {
-      filters.push(`sortByDate=${sortByDate}`)
-    }
-      
-    if (filters.length > 0) {
-      getRequest += "?"
-      
-      filters.forEach(element => {
-        getRequest += element
-        getRequest += "&"
-      });
-    }
-  
-  
-    getRequest += `?min=${min}&max=${max}`
-    
-    const response = await axios.get(getRequest)
-  
-    return JSON.parse(JSON.stringify(response.data))
-  } catch (e) {
-    throw new Error(e);
+    const filters = buildFilters(filtObj);
+    const getRequest = `${baseURL}?${filters.join("&")}`;
+    const response = await axios.get(getRequest);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching todos:", error);
+    throw error;
   }
-}
-
-
-
+};
+  
 export const createNewTodo = async (data) => {
   try {
     const response = await axios.post(baseURL, data)
