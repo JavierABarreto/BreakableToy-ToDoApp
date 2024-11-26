@@ -6,12 +6,15 @@ import { setFilter, setFlag } from '../../redux/pageSlice';
 import { setTodosStore } from '../../redux/slice';
 
 export const ToDoTable = ({ todos, setType }) => {
+  const dispatch = useDispatch()
+
   const [pOrder, setPriorityOrder] = useState("default");
   const [dOrder, setDateOrder] = useState("asc");
 
-  const dispatch = useDispatch()
-  const filters = useSelector(state => state.page.filters)
-  const flag = useSelector(state => state.page.flag)
+  const { filters, flag } = useSelector(state => ({
+    filters: state.page.filters,
+    flag: state.page.flag
+  }))
 
   const sorter = async (by) => {
     if(by == "priority"){
