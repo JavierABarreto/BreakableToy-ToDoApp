@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { getTodos } from '../js/axios'
 import { useDispatch, useSelector } from 'react-redux'
 import { setTodosStore } from '../redux/slice'
@@ -6,21 +6,32 @@ import { setFilter, setFlag } from '../redux/pageSlice'
 
 export const SearchFilter = () => {
   const dispatch = useDispatch()
-  const filters = useSelector(state => state.page.filters)
-  const flag = useSelector(state => state.page.flag)
+  const { filters, flag } = useSelector(state => ({
+    filters: state.page.filters,
+    flag: state.page.flag
+  }))
+
+  const textRef = useRef(null);
+  const priorityRef = useRef(null);
+  const statusRef = useRef(null);
 
   const search = async () => {
-    const text = document.getElementById("inputTextSearchFilter").value
-    const priority = document.getElementById("prioritySelectSearchFilter").value
-    const status = document.getElementById("statusSelectSearchFilter").value
+    const text = textRef.current.value;
+    const priority = priorityRef.current.value;
+    const status = statusRef.current.value;
 
-    dispatch(setFilter({ payload: text, type: "text" }))
-    priority != "default" ? dispatch(setFilter({ payload: priority, type: "getByPriority" })) : dispatch(setFilter({ payload: "default", type: "getByPriority" })) 
-    status != 0 ? dispatch(setFilter({ payload: status, type: "getByStatus" })) : dispatch(setFilter({ payload: 0, type: "getByStatus" }))
-    
-    await getTodos(filters)
-      .then((res) => dispatch(setTodosStore(res)))
-      .then(() => dispatch(setFlag(!flag)))
+    dispatch(setFilter({ payload: text, type: 'text' }));
+    dispatch(setFilter({ payload: priority !== 'default' ? priority : 'default', type: 'getByPriority' }));
+    dispatch(setFilter({ payload: status !== '0' ? status : 0, type: 'getByStatus' }));
+
+
+    try {
+      await getTodos(filters)
+        .then((res) => dispatch(setTodosStore(res)))
+      dispatch(setFlag(!flag))
+    } catch (error) {
+      console.error('Failed to fetch todos:', error);
+    }
   }
 
   return (
@@ -30,7 +41,7 @@ export const SearchFilter = () => {
           <label htmlFor="inputText" className="col-form-label">Name</label>
         </div>
         <div className="col-11">
-          <input type="text" id="inputTextSearchFilter" className="form-control" placeholder="text" maxLength={120} />
+          <input type="text" id="inputTextSearchFilter" className="form-control" placeholder="text" maxLength={120} ref={textRef} />
         </div>
       </div>
 
@@ -39,7 +50,7 @@ export const SearchFilter = () => {
           <label className="col-form-label">Priority</label>
         </div>
         <div className="col-4">
-          <select className="form-select" id="prioritySelectSearchFilter">
+          <select className="form-select" id="prioritySelectSearchFilter" ref={priorityRef}>
             <option selected value={"default"} disabled key={"v-d"}>All, High, Medium, Low</option>
             <option value={"default"} key={"v-0"}>All</option>
             <option value={"High"} key={"v-3"}>High</option>
@@ -54,7 +65,7 @@ export const SearchFilter = () => {
           <label className="col-form-label">Status</label>
         </div>
         <div className="col-4">
-          <select className="form-select" id="statusSelectSearchFilter">
+          <select className="form-select" id="statusSelectSearchFilter" ref={statusRef}>
             <option selected value={0} disabled>All, Done, Undone</option>
             <option value={0}>All</option>
             <option value={1}>Done</option>
