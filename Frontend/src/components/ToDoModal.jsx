@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as bootstrap from 'bootstrap'
 import moment from 'moment'
 import { createNewTodo, editTodoRequest } from '../js/axios'
@@ -10,78 +10,63 @@ export const ToDoModal = ({ clearFields, type }) => {
   const flag = useSelector(state => state.page.flag)
   const todo = useSelector(state => state.todos.todo)
 
-  if(type == "edit") {
-    const { dueDate, priority, text } = todo
-    let formatedDueDate = dueDate == 0 ? "" : moment.unix(todo.dueDate).format("YYYYY-MM-DDTHH:mm")
+  const [text, setText] = useState('');
+  const [dueDate, setDueDate] = useState('');
+  const [priority, setPriority] = useState('');
 
-    document.getElementById("inputText").value = text
-    document.getElementById("inputDueDate").value = formatedDueDate
-    document.getElementById("prioritySelect").value = priority
-  }
-
-  const saveTodo = () => {
-    const text = document.getElementById("inputText").value
-    const dueDate = document.getElementById("inputDueDate").value
-    const priority = document.getElementById("prioritySelect").value
-
-    if (text != "" && priority != "") {
-      if (dueDate != "") {
-        if (moment(dueDate).format("X") < moment().format("X")) {
-          alert("Plese, dont put dates before your current day.")
-
-          return "";
-        }
-      }
-      const data = {
-        text: text,
-        dueDate: dueDate == "" ? 0 : moment(dueDate).format("X"),
-        status: false,
-        doneDate: 0,
-        priority: priority,
-        creationDate: moment().format("X")
-      }
-
-      createNewTodo(data)
-        .then(() => dispatch(setFlag(!flag)))
-      clearFields()
-    } else {
-      alert("Please make sure to fill out all the fields")
+  useEffect(() => {
+    if(type == "edit" && todo) {
+      setText(todo.text);
+      setDueDate(todo.dueDate ? moment.unix(todo.dueDate).format("YYYYY-MM-DDTHH:mm") : '');
+      setPriority(todo.priority);
     }
-  }
+  }, [type, todo])
 
-  const editTodo = () =>{
-    const text = document.getElementById("inputText").value
-    const dueDate = document.getElementById("inputDueDate").value
-    const priority = document.getElementById("prioritySelect").value
-
-    if (text != "" && priority != "") {
-      if (dueDate != "") {
-        if (moment(dueDate).format("X") < moment().format("X")) {
-          alert("Plese, dont put dates before your current day.")
-
-          return "";
-        }
-      }
-
-      const data = {
-        id: todo.id,
-        text: text,
-        dueDate: dueDate == "" ?  0 : moment(dueDate).format("X"),
-        status: todo.status,
-        doneDate: todo.doneDate,
-        priority: priority,
-        creationDate: todo.creationDate
-      }
-
-      editTodoRequest(data)
-        .then(() => dispatch(setFlag(!flag)))
-
-      clearFields()
-    } else {
-      alert("Please make sure to fill out all the fields")
+  const validateForm = () => {
+    if (!text || !priority) {
+      alert('Please make sure to fill out all the fields');
+      return false;
     }
+    if (dueDate && moment(dueDate).isBefore(moment())) {
+      alert('Please, don\'t put dates before your current day.');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSave = () => {
+    if (!validateForm()) return;
+    
+    const data = {
+      text: text,
+      dueDate: dueDate == "" ? 0 : moment(dueDate).format("X"),
+      status: false,
+      doneDate: 0,
+      priority: priority,
+      creationDate: moment().format("X")
+    }
+
+    createNewTodo(data)
+      .then(() => dispatch(setFlag(!flag)))
+    clearFields()
   }
-  
+
+  const handleEdit = () => {
+    if (!validateForm()) return;
+
+    const data = {
+      ...todo,
+      text,
+      dueDate: dueDate ? moment(dueDate).format('X') : 0,
+      priority
+    };
+
+    updateTodo(data).then(() => {
+      dispatch(setFlag(!flag));
+      clearFields();
+    });
+  };
+
   return (
     <div className="modal modal" id="todoModal" tabIndex="-1" aria-hidden="true">
       <div className="modal-dialog modal-dialog-centered modal-lg">
@@ -97,18 +82,18 @@ export const ToDoModal = ({ clearFields, type }) => {
                 <>
                   <div className="mb-4">
                     <label htmlFor="inputText">Text:</label>
-                    <textarea className="w-100" id="inputText" cols={10} maxLength={120} defaultValue={type == "edit" ? todo.text : "" } />
+                    <textarea className="w-100" id="inputText" cols={10} maxLength={120} defaultValue={text} onChange={(e) => setText(e.target.value)} />
                   </div>
 
                   <div className="row mb-4">
                     <div className="col-6">
                       <label className="form-label" htmlFor="inputDueDate">Due date:</label>
-                      <input className="form-control" type="datetime-local" id="inputDueDate" min={moment().format("YYYY-MM-DDTHH:mm")}/>
+                      <input className="form-control" type="datetime-local" id="inputDueDate" min={moment().format("YYYY-MM-DDTHH:mm")} onChange={(e) => setDueDate(e.target.value)} value={dueDate} />
                     </div>
 
                     <div className="col-6">
                       <label className="mb-2" htmlFor="prioritySelect">Priority:</label>
-                      <select className="form-select" id="prioritySelect">
+                      <select className="form-select" id="prioritySelect" onChange={(e) => setPriority(e.target.value)} value={priority} >
                         <option selected disabled value="default">All, High, Medium, Low</option>
                         <option value="High">High</option>
                         <option value="Medium">Medium</option>
@@ -121,19 +106,19 @@ export const ToDoModal = ({ clearFields, type }) => {
                 <>
                   <div className="mb-4">
                     <label htmlFor="inputText">Text:</label>
-                    <textarea className="w-100" id="inputText" cols={10} maxLength={120} />
+                    <textarea className="w-100" id="inputText" cols={10} maxLength={120} onChange={(e) => setText(e.target.value)} value={text}/>
                   </div>
 
                   <div className="row mb-4">
                     <div className="col-6">
                       <label className="form-label" htmlFor="inputDueDate">Due date:</label>
-                      <input className="form-control" type="datetime-local" id="inputDueDate"/>
+                      <input className="form-control" type="datetime-local" id="inputDueDate" onChange={(e) => setDueDate(e.target.value)} value={dueDate} />
                     </div>
 
                     <div className="col-6">
                       <label className="form-label" htmlFor="prioritySelect">Priority:</label>
 
-                      <select className="form-select" id="prioritySelect">
+                      <select className="form-select" id="prioritySelect" onChange={(e) => setPriority(e.target.value)} value={priority} >
                         <option selected disabled value="default">All, High, Medium, Low</option>
                         <option value="High">High</option>
                         <option value="Medium">Medium</option>
@@ -149,9 +134,9 @@ export const ToDoModal = ({ clearFields, type }) => {
             <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={() => clearFields()}>Cancel</button>
             {
               type == "create" ?
-                <button type="button" className="btn btn-success" data-bs-dismiss="modal" onClick={() => saveTodo()}>Create ToDo</button>
+                <button type="button" className="btn btn-success" data-bs-dismiss="modal" onClick={() => handleSave()}>Create ToDo</button>
               :
-              <button type="button" className="btn btn-success" data-bs-dismiss="modal" onClick={() => editTodo()}>Edit ToDo</button>
+                <button type="button" className="btn btn-success" data-bs-dismiss="modal" onClick={() => handleEdit()}>Edit ToDo</button>
             }
           </div>
         </div>

@@ -20,12 +20,12 @@ export const ToDoTable = ({ todos, setType }) => {
       await getTodos(filters)
         .then((res) => dispatch(setTodosStore(res)))
         .then(() => dispatch(setFlag(!flag)))
-      } else {
-        dispatch(setFilter({ payload: dOrder, type: "sortByDate" }))
-        
-        await getTodos(filters)
-          .then((res) => dispatch(setTodosStore(res)))
-          .then(() => dispatch(setFlag(!flag)))
+    } else {
+      dispatch(setFilter({ payload: dOrder, type: "sortByDate" }))
+      
+      await getTodos(filters)
+        .then((res) => dispatch(setTodosStore(res)))
+        .then(() => dispatch(setFlag(!flag)))
     }
 
   }
