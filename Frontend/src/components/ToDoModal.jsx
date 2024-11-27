@@ -12,7 +12,7 @@ export const ToDoModal = ({ type }) => {
 
   const [text, setText] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [priority, setPriority] = useState('');
+  const [priority, setPriority] = useState('default');
 
   useEffect(() => {
     if(type == "edit" && todo) {
@@ -25,7 +25,7 @@ export const ToDoModal = ({ type }) => {
   const clearFields = () => {
     setText('');
     setDueDate('');
-    setPriority('');
+    setPriority('default');
   }
 
   const validateForm = () => {
@@ -88,7 +88,7 @@ export const ToDoModal = ({ type }) => {
                 <>
                   <div className="mb-4">
                     <label htmlFor="inputText">Text:</label>
-                    <textarea className="w-100" id="inputText" cols={10} maxLength={120} defaultValue={text} onChange={(e) => setText(e.target.value)} />
+                    <textarea className="w-100" id="inputText" cols={10} maxLength={120} value={text} onChange={(e) => setText(e.target.value)} />
                   </div>
 
                   <div className="row mb-4">

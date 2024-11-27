@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const baseURL = "http://localhost:9090/todos"
 const PRIORITY_DEFAULT = "default";
+const DATE_DEFAULT = "asc";
 const STATUS_DONE = 1;
 
 const getPriorityValue = (priority) => {
@@ -15,7 +16,7 @@ const getPriorityValue = (priority) => {
   }
 };
 
-const buildFilters = ({ text = "", getByPriority = PRIORITY_DEFAULT, getByStatus = 0, sortByPriority = PRIORITY_DEFAULT, sortByDate }) => {
+const buildFilters = ({ text = "", getByPriority = PRIORITY_DEFAULT, getByStatus = 0, sortByPriority = PRIORITY_DEFAULT, sortByDate = DATE_DEFAULT, max, min}) => {
   const filters = [];
 
   if (text) {
@@ -33,6 +34,13 @@ const buildFilters = ({ text = "", getByPriority = PRIORITY_DEFAULT, getByStatus
   if (sortByPriority !== PRIORITY_DEFAULT) {
     filters.push(`sortByPriority=${sortByPriority}`);
   }
+
+  if (sortByDate !== DATE_DEFAULT) { 
+    filters.push(`sortByDate=${sortByDate}`);
+  }
+
+  filters.push(`min=${min}`);
+  filters.push(`max=${max}`);
 
   return filters;
 };

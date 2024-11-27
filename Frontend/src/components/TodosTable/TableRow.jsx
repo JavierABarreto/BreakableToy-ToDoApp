@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setFlag } from '../../redux/pageSlice'
 import { setTodo } from '../../redux/slice'
@@ -6,34 +6,41 @@ import moment from 'moment'
 import { changeTodoStatus, deleteTodo } from '../../js/axios'
 
 export const TableRow = ({ data, setType }) => {
-  const { id, text, priority, dueDate, status } = data
   const dispatch = useDispatch()
+
+  const { id, text, priority, dueDate, status } = data
   const flag = useSelector(state => state.page.flag)
 
-  const deleteFunction = () => {
+  const toggleFlag = useCallback(() => {
+    dispatch(setFlag(!flag));
+  }, [dispatch, flag]);
+
+  const handlerDelete = useCallback(() => {
     if(confirm("Are you sure you want to delete this ToDo?")) {
       deleteTodo(data)
-        .then(() => alert("ToDo has been deleted."))
-      
-      dispatch(setFlag(!flag))
+        .then(() => {
+          alert("ToDo has been deleted.");
+          toggleFlag();
+      })
     }
-  }
+  }, [data, toggleFlag])
 
-  const markAsDone = (e) => {
-    const as = e.target.value == true ? "undone" : "done"
+  const markAsDone = useCallback((element) => {
+    const as = element.target.value == true ? "undone" : "done"
     const doneDate = moment().format("X")
 
-    const data = {
+    const updatedData = {
+      ...data,
       id: id,
       as: as,
       doneDate: doneDate
     }
 
-    changeTodoStatus(data)
-      .then(() => dispatch(setFlag(!flag)))
-  }
+    changeTodoStatus(updatedData)
+      .then(() => toggleFlag())
+  }, [data, toggleFlag])
 
-  let dDate = dueDate == 0 ? "" : moment.unix(dueDate).format("DD-MM-YYYY - hh:mm a")
+  let formattedDueDate = dueDate == 0 ? "" : moment.unix(dueDate).format("DD-MM-YYYY - hh:mm a")
 
   const rowColor = () => {
     if (dueDate > 0) {
@@ -53,7 +60,7 @@ export const TableRow = ({ data, setType }) => {
       <th scope="row" className="text-center"><input type="checkbox" id={"cb-"+id} onChange={(e) => markAsDone(e)} checked={status} /></th>
       <td className="col-4">{text}</td>
       <td className="col-2">{priority}</td>
-      <td className="col-2">{dDate}</td> 
+      <td className="col-2">{formattedDueDate}</td> 
       <td className="col-3">
         {
           <>
@@ -67,7 +74,7 @@ export const TableRow = ({ data, setType }) => {
               :
                 <></>
             }
-            <button className="btn btn-secondary mx-2" onClick={() => deleteFunction()}>Delete</button>
+            <button className="btn btn-secondary mx-2" onClick={() => handlerDelete()}>Delete</button>
           </>
         }
       </td>
