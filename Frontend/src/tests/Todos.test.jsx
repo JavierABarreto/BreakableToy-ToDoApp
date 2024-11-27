@@ -7,7 +7,6 @@ import { Provider } from 'react-redux'
 import { App } from '../pages/App'
 import { ToDoTable } from '../components/TodosTable/ToDoTable'
 import { ToDoModal } from '../components/ToDoModal'
-import { useEffect } from 'react'
 
 describe("ToDo tests", () => {
   afterEach(() => {

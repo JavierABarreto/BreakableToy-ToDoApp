@@ -16,7 +16,7 @@ const getPriorityValue = (priority) => {
   }
 };
 
-const buildFilters = ({ text = "", getByPriority = PRIORITY_DEFAULT, getByStatus = 0, sortByPriority = PRIORITY_DEFAULT, sortByDate = DATE_DEFAULT, max, min}) => {
+export const buildFilters = ({ text = "", getByPriority = PRIORITY_DEFAULT, getByStatus = 0, sortByPriority = PRIORITY_DEFAULT, sortByDate = DATE_DEFAULT, max, min}) => {
   const filters = [];
 
   if (text) {
