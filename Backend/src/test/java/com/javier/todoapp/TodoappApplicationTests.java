@@ -1,5 +1,6 @@
 package com.javier.todoapp;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +19,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TodoappApplicationTests {
-	Long dueDate = Long.valueOf(1723311446);
-	Long doneDate = Long.valueOf(0);
-	Long creationDate = Long.valueOf(1723225046);
+	private static final Long dueDate = 1723311446L;
+	private static final Long doneDate = 0L;
+	private static final Long creationDate = 1723225046L;
 
-	Todo ToDo = new Todo(UUID.randomUUID().toString(), "T1", dueDate, false, doneDate, "asd", creationDate);
-	String id = ToDo.getId();
+	private Todo todo;
+	private String todoId;
 
 	@Autowired
 	TestRestTemplate restTemplate;
+
+	@BeforeEach
+	void setUp() {
+		todo = new Todo(UUID.randomUUID().toString(), "T1", dueDate, false, doneDate, "asd", creationDate);
+		todoId = todo.getId();
+	}
 
 	@Test
 	void getTodosGetEmptyArray() {
@@ -40,14 +47,44 @@ class TodoappApplicationTests {
 	}
 
 	@Test
+	void GetFilteredTodos () {
+		ResponseEntity<ReturnRecord> GetResponse = restTemplate.getForEntity("/todos", ReturnRecord.class);
+		assertThat(GetResponse.getBody().todos().size()).isEqualTo(0);
+
+		Todo todo1 = new Todo(UUID.randomUUID().toString(), "T1", dueDate, false, doneDate, "asd", creationDate);
+		Todo todo2 = new Todo(UUID.randomUUID().toString(), "T2", dueDate, false, doneDate, "asd", creationDate);
+		Todo todo3 = new Todo(UUID.randomUUID().toString(), "T3", dueDate, false, doneDate, "asd", creationDate);
+		Todo todo4 = new Todo(UUID.randomUUID().toString(), "T4", dueDate, false, doneDate, "asd", creationDate);
+		Todo todo5 = new Todo(UUID.randomUUID().toString(), "R1", dueDate, false, doneDate, "asd", creationDate);
+
+		restTemplate.postForEntity("/todos", todo1, String.class);
+		restTemplate.postForEntity("/todos", todo2, String.class);
+		restTemplate.postForEntity("/todos", todo3, String.class);
+		restTemplate.postForEntity("/todos", todo4, String.class);
+		restTemplate.postForEntity("/todos", todo5, String.class);
+
+		ResponseEntity<ReturnRecord> GetResponseAfterAdd = restTemplate.getForEntity("/todos", ReturnRecord.class);
+		assertThat(GetResponseAfterAdd.getBody().todos().size()).isEqualTo(5);
+
+		ResponseEntity<ReturnRecord> GetFilteredResponse = restTemplate.getForEntity("/todos?status=false", ReturnRecord.class);
+		assertThat(GetFilteredResponse.getBody().todos().size()).isEqualTo(5);
+
+		ResponseEntity<ReturnRecord> GetFilteredResponse2 = restTemplate.getForEntity("/todos?text=T", ReturnRecord.class);
+		assertThat(GetFilteredResponse2.getBody().todos().size()).isEqualTo(4);
+
+		ResponseEntity<ReturnRecord> GetFilteredResponse3 = restTemplate.getForEntity("/todos?text=R1", ReturnRecord.class);
+		assertThat(GetFilteredResponse3.getBody().todos().size()).isEqualTo(1);
+	}
+
+	@Test
 	void postNewToDo() {
-		ResponseEntity<String> PostResponse = restTemplate.postForEntity("/todos", ToDo, String.class);
+		ResponseEntity<String> PostResponse = restTemplate.postForEntity("/todos", todo, String.class);
 		assertThat(PostResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(PostResponse.getBody()).isEqualTo("New ToDo has been added successfuly");
 		
 		ResponseEntity<ReturnRecord> GetResponse = restTemplate.getForEntity("/todos", ReturnRecord.class);
 		assertThat(GetResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(GetResponse.getBody().todos().size()).isEqualTo(1);
+		assertThat(GetResponse.getBody().todos().size()).isEqualTo(6);
 	}
 	
 	@Test
@@ -57,21 +94,21 @@ class TodoappApplicationTests {
 		Todo todo = todos.get(0);
 
 		Todo data = new Todo(
-				id,
+				todoId,
 				"Do my weekly essay",
-				Long.valueOf(1723484246),
+				1723484246L,
 				todo.getStatus(),
 				todo.getDoneDate(),
 				"High",
 				todo.getCreationDate()
 			);
 
-		restTemplate.put("/todos/" + id, data);
+		restTemplate.put("/todos/" + todoId, data);
 
 		ResponseEntity<ReturnRecord> GetResponseAfterEdit = restTemplate.getForEntity("/todos", ReturnRecord.class);
 		Todo editedTodo =  GetResponseAfterEdit.getBody().todos().get(0);
 		assertThat(editedTodo.getText().equals("Do my weekly essay"));
-		assertThat(editedTodo.getDueDate().equals(1723484246));
+		assertThat(editedTodo.getDueDate().equals(1723484246L));
 		assertThat(editedTodo.getPriority().equals("High"));
 	}
 
@@ -83,9 +120,9 @@ class TodoappApplicationTests {
 		Todo todoBeforeSetAsDone =  todos.get(0);
 		assertThat(todoBeforeSetAsDone.getStatus().equals(false));
 
-		SetDoneDate data = new SetDoneDate(id, "", newDoneDate);
+		SetDoneDate data = new SetDoneDate(todoId, "", newDoneDate);
 
-		restTemplate.put("/todos/" + id + "/done", data);
+		restTemplate.put("/todos/" + todoId + "/done", data);
 
 		ResponseEntity<ReturnRecord> GetResponseAfterMarkAsDone = restTemplate.getForEntity("/todos", ReturnRecord.class);
 		Todo doneTodo =  GetResponseAfterMarkAsDone.getBody().todos().get(0);
@@ -95,28 +132,28 @@ class TodoappApplicationTests {
 
 	@Test
 	void setTodoAsUndne() {
-		Long newDoneDate = Long.valueOf(0);
+		Long newDoneDate = 0L;
 		ResponseEntity<ReturnRecord> GetResponse = restTemplate.getForEntity("/todos", ReturnRecord.class);
 		ArrayList<Todo> todos =  GetResponse.getBody().todos();
 		Todo todoBeforeSetAsUndone =  todos.get(0);
 		assertThat(todoBeforeSetAsUndone.getStatus().equals(true));
 
-		SetDoneDate data = new SetDoneDate(id, "", newDoneDate);
+		SetDoneDate data = new SetDoneDate(todoId, "", newDoneDate);
 
-		restTemplate.put("/todos/" + id + "/undone", data);
+		restTemplate.put("/todos/" + todoId + "/undone", data);
 
 		ResponseEntity<ReturnRecord> GetResponseAfterMarkAsUndone = restTemplate.getForEntity("/todos", ReturnRecord.class);
 		Todo undoneTodo =  GetResponseAfterMarkAsUndone.getBody().todos().get(0);
 		assertThat(undoneTodo.getStatus().equals(false));
-		assertThat(undoneTodo.getDoneDate().equals(Long.valueOf(0)));
+		assertThat(undoneTodo.getDoneDate().equals(0L));
 	}
 
 	@Test
 	void DeleteTodo () {
 		ResponseEntity<ReturnRecord> GetResponse = restTemplate.getForEntity("/todos", ReturnRecord.class);
-		assertThat(GetResponse.getBody().todos().size()).isEqualTo(1);
+		assertThat(GetResponse.getBody().todos().size()).isEqualTo(6);
 		
-		ResponseEntity<String> PostDeleteResponse = restTemplate.postForEntity("/todos/delete/"+id, ToDo,String.class);
+		ResponseEntity<String> PostDeleteResponse = restTemplate.postForEntity("/todos/delete/"+todoId, todo,String.class);
 		assertThat(PostDeleteResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		ResponseEntity<ReturnRecord> GetResponseAfterDelete = restTemplate.getForEntity("/todos", ReturnRecord.class);
