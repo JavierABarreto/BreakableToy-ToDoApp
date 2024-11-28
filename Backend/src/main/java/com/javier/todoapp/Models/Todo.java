@@ -1,4 +1,4 @@
-package com.javier.todoapp.todo;
+package com.javier.todoapp.Models;
 
 public class Todo {
   private String id;

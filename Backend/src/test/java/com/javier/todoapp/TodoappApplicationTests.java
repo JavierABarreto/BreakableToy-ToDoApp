@@ -2,15 +2,14 @@ package com.javier.todoapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import com.javier.todoapp.todo.ReturnRecord;
-import com.javier.todoapp.todo.SetDoneDate;
-import com.javier.todoapp.todo.Todo;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import com.javier.todoapp.Models.ReturnRecord;
+import com.javier.todoapp.Models.SetDoneDate;
+import com.javier.todoapp.Models.Todo;
 
 import java.util.ArrayList;
 import java.util.UUID;

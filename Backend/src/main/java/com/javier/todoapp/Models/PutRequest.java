@@ -1,4 +1,4 @@
-package com.javier.todoapp.todo;
+package com.javier.todoapp.Models;
 
 public record PutRequest(String id) {
 }
