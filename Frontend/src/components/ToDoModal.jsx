@@ -67,7 +67,7 @@ export const ToDoModal = ({ type }) => {
       priority
     };
 
-    updateTodo(data).then(() => {
+    editTodoRequest(data).then(() => {
       dispatch(setFlag(!flag));
     });
     clearFields()
