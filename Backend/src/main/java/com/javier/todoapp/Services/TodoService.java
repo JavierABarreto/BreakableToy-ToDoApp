@@ -3,6 +3,7 @@ package com.javier.todoapp.Services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import com.javier.todoapp.Models.ReturnRecord;
 import com.javier.todoapp.Models.SetDoneDate;
@@ -14,6 +15,8 @@ import com.javier.todoapp.Repositories.TodoRepository;
 
 public class TodoService {
   private final TodoRepository todoRepository = new TodoRepository();
+
+  private static final Logger LOGGER = Logger.getLogger(TodoService.class.getName());
 
   public ReturnRecord getTodos(String sortByPriority, String sortByDate, String sortByDone, String sortByUndone, String getBy, int min, int max, String text) {
     ArrayList<Todo> filteredTodos = new ArrayList<Todo>();
@@ -181,8 +184,10 @@ public class TodoService {
 
       todoRepository.saveTodo(todo);
 
+      LOGGER.info("New ToDo has been added successfuly with id: " + id);
       return "New ToDo has been added successfuly";
     } else {
+      LOGGER.severe("Please, make sure that all required fields are filled. Data: " + request);
       return "Please, make sure that all required fields are filled.";
     }
   }
@@ -191,17 +196,25 @@ public class TodoService {
     if(!id.toString().toString().equals("") && !request.getText().equals("") && !request.getPriority().toString().equals("default")) {
 
       todoRepository.editTodo(id, request);
-  
+
+      LOGGER.info("ToDo with id: " + id + "has been modified successfully");
       return "ToDo with id " + id + " has been modified.";
     } else {
+      LOGGER.severe("Please, make sure that all required fields are filled.");
+      LOGGER.severe("ToDo id: " + id);
+      LOGGER.severe("Data: " + request);
       return "Make sure to provide the correct id and make sure that the fields of the new information arent empty";
     }
   }
 
   public String putDoneMethod(String id, SetDoneDate request) {
     if (!id.toString().equals("")) {
+      LOGGER.info("ToDo with id: " + id + "has been modified successfully");
       return todoRepository.editTodoStatus("Done", id, request);
     } else {
+      LOGGER.severe("Please, make sure that all required fields are filled.");
+      LOGGER.severe("ToDo id: " + id);
+      LOGGER.severe("Data: " + request);
       return "Please, provide an id";
     }
   }
@@ -210,16 +223,21 @@ public class TodoService {
     if (!id.equals("")){
       SetDoneDate temp = new SetDoneDate(null, null, null);
 
+      LOGGER.info("ToDo with id: " + id + "has been modified successfully");
       return todoRepository.editTodoStatus("Undone", id, temp);
     } else {
+      LOGGER.severe("ToDo with id \"" + id +  " doesn't exists\".");
       return "Please, provide an id";
     }
   }
 
   public String postDeleteMethod (String id) {
     if (!id.equals("")) {
+      LOGGER.info("ToDo with id: " + id + "has been deleted successfully");
       return todoRepository.deleteToDo(id);
     } else {
+      LOGGER.severe("Please, make sure that all required fields are filled.");
+      LOGGER.severe("ToDo id: " + id);
       return "Please, provide an id";
     }
   }
