@@ -1,5 +1,6 @@
 package com.javier.todoapp;
 
+import com.javier.todoapp.Customer.CustomerDTO;
 import com.javier.todoapp.Models.Todo;
 import org.springframework.web.bind.annotation.RestController;
 

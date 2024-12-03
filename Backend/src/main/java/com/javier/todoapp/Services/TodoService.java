@@ -2,9 +2,11 @@ package com.javier.todoapp.Services;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import com.javier.todoapp.Customer.CustomerDTO;
 import com.javier.todoapp.Models.ReturnRecord;
 import com.javier.todoapp.Models.SetDoneDate;
 import com.javier.todoapp.Models.Todo;
@@ -15,27 +17,25 @@ import com.javier.todoapp.Repositories.TodoRepository;
 
 public class TodoService {
   private final TodoRepository todoRepository = new TodoRepository();
-
   private static final Logger LOGGER = Logger.getLogger(TodoService.class.getName());
 
   public ReturnRecord getTodos(String sortByPriority, String sortByDate, String sortByDone, String sortByUndone, String getBy, int min, int max, String text) {
-    ArrayList<Todo> filteredTodos = new ArrayList<Todo>();
-    filteredTodos = todoRepository.getTodos();
+    List<CustomerDTO> filteredTodos = todoRepository.getTodos();
 
     if(!sortByPriority.equals("default")) {
-      ArrayList<Todo> todosPriority = new ArrayList<Todo>();
+      ArrayList<CustomerDTO> todosPriority = new ArrayList<CustomerDTO>();
       String[] prioritiesArray = new String[]{"Low", "Medium", "High"};
 
       for(String p : prioritiesArray) {
-        for(Todo e : filteredTodos) {
-          if (e.getPriority().equals(p)) {
+        for(CustomerDTO e : filteredTodos) {
+          if (e.priority().equals(p)) {
             todosPriority.add(e);
           }
         }
       }
 
 
-      if(sortByPriority.toString().equals("dsc")) {
+      if(sortByPriority.equals("dsc")) {
         Collections.reverse(todosPriority);
       }
 
@@ -44,23 +44,22 @@ public class TodoService {
 
 
     if(!sortByDate.equals("default")) {
-      ArrayList<Todo> temp = new ArrayList<Todo>();
-      temp = filteredTodos;
+      List<CustomerDTO> temp = filteredTodos;
 
       for (int i = 0; i < temp.size() - 1; i++) {
         for (int j = i + 1; j < temp.size(); j++) {
-          Long d1 = temp.get(i).getDueDate();
-          Long d2 = temp.get(j).getDueDate();
+          Long d1 = temp.get(i).dueDate();
+          Long d2 = temp.get(j).doneDate();
 
           if(d2 < d1) {
-            Todo temptodo = temp.get(i);
+            CustomerDTO temptodo = temp.get(i);
             temp.set(i, filteredTodos.get(j));
             temp.set(j, temptodo);
           }
         }
       }
 
-      if(sortByDate.toString().equals("dsc")) {
+      if(sortByDate.equals("dsc")) {
         Collections.reverse(temp);
       }
 
@@ -69,10 +68,10 @@ public class TodoService {
 
 
     if(sortByDone.equals("true")) {
-      ArrayList<Todo> doneTodos = new ArrayList<Todo>();
+      ArrayList<CustomerDTO> doneTodos = new ArrayList<CustomerDTO>();
 
-      for(Todo e : filteredTodos) {
-        if(e.getStatus()) {
+      for(CustomerDTO e : filteredTodos) {
+        if(e.status()) {
           doneTodos.add(e);
         }
       }
@@ -81,10 +80,10 @@ public class TodoService {
     }
 
     if(sortByUndone.equals("true")) {
-      ArrayList<Todo> undoneTodos = new ArrayList<Todo>();
+      ArrayList<CustomerDTO> undoneTodos = new ArrayList<CustomerDTO>();
 
-      for(Todo e : filteredTodos) {
-        if(!e.getStatus()) {
+      for(CustomerDTO e : filteredTodos) {
+        if(!e.status()) {
           undoneTodos.add(e);
         }
       }
@@ -93,28 +92,28 @@ public class TodoService {
     }
 
     if(!getBy.equals("default")) {
-      ArrayList<Todo> getByArray = new ArrayList<Todo>();
+      List<CustomerDTO> getByArray = new ArrayList<CustomerDTO>();
 
       switch (getBy) {
         case "Low":
-          for(Todo e : filteredTodos) {
-            if (e.getPriority().equals("Low")) {
+          for(CustomerDTO e : filteredTodos) {
+            if (e.priority().equals("Low")) {
               getByArray.add(e);
             }
           }
           break;
 
         case "Medium":
-          for(Todo e : filteredTodos) {
-            if (e.getPriority().equals("Medium")) {
+          for(CustomerDTO e : filteredTodos) {
+            if (e.priority().equals("Medium")) {
               getByArray.add(e);
             }
           }
           break;
 
         default:
-          for(Todo e : filteredTodos) {
-            if (e.getPriority().equals("High")) {
+          for(CustomerDTO e : filteredTodos) {
+            if (e.priority().equals("High")) {
               getByArray.add(e);
             }
           }
@@ -125,10 +124,10 @@ public class TodoService {
     }
 
     if (!text.equals("")){
-      ArrayList<Todo> getByName = new ArrayList<Todo>();
+      ArrayList<CustomerDTO> getByName = new ArrayList<CustomerDTO>();
 
-      for (Todo e : filteredTodos) {
-        if (e.getText().toLowerCase().contains(text.toString().toLowerCase())){
+      for (CustomerDTO e : filteredTodos) {
+        if (e.text().toLowerCase().contains(text.toLowerCase())){
           getByName.add(e);
         }
       }
@@ -142,7 +141,7 @@ public class TodoService {
       max = filteredTodos.size();
     }
 
-    ArrayList<Todo> todos = new ArrayList<Todo>();
+    List<CustomerDTO> todos = new ArrayList<CustomerDTO>();
 
     double nPages = 0;
     double currentPage = 0;
@@ -178,7 +177,7 @@ public class TodoService {
 
 
   public String postMethod(NewTodoRequest request) {
-    if (request.text() != "" && request.priority() != "" && !request.text().equals(null)) {
+    if (request.text() != "" && !request.priority().equals("") && !request.text().equals(null)) {
       UUID id = UUID.randomUUID();
       Todo todo = new Todo(id.toString(), request.text(), request.dueDate(), request.status(), request.doneDate(), request.priority(), request.creationDate());
 
@@ -193,7 +192,7 @@ public class TodoService {
   }
 
   public String putMethod(String id, Todo request) {
-    if(!id.toString().toString().equals("") && !request.getText().equals("") && !request.getPriority().toString().equals("default")) {
+    if(!id.equals("") && !request.getText().equals("") && !request.getPriority().equals("default")) {
 
       todoRepository.editTodo(id, request);
 
@@ -208,7 +207,7 @@ public class TodoService {
   }
 
   public String putDoneMethod(String id, SetDoneDate request) {
-    if (!id.toString().equals("")) {
+    if (!id.equals("")) {
       LOGGER.info("ToDo with id: " + id + "has been modified successfully");
       return todoRepository.editTodoStatus("Done", id, request);
     } else {
@@ -248,23 +247,23 @@ public class TodoService {
   public double getAvgOfPriority (String priority) {
     double Timee = 0;
     int counter = 0;
-    ArrayList<Todo> todos = todoRepository.getTodos();
+    List<CustomerDTO> todos = todoRepository.getTodos();
 
     if(priority != "default") {
-      for(Todo e : todos) {
-        if (e.getPriority().equals(priority) && e.getStatus().equals(true)) {
+      for(CustomerDTO e : todos) {
+        if (e.priority().equals(priority) && e.status().equals(true)) {
           counter++;
-          double seconds = e.getDoneDate() - e.getCreationDate();
+          double seconds = e.doneDate() - e.creationDate();
           Timee +=  seconds;
         }
       }
     } else {
       for (int i = 0; i < todos.size(); i++) {
-        Todo tempTodo = todos.get(i);
+        CustomerDTO tempTodo = todos.get(i);
 
-        if (tempTodo.getStatus().equals(true)) {
+        if (tempTodo.status().equals(true)) {
           counter++;
-          double seconds = tempTodo.getDoneDate() - tempTodo.getCreationDate();
+          double seconds = tempTodo.doneDate() - tempTodo.creationDate();
           Timee +=  seconds;
         }
       }

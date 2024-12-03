@@ -1,9 +1,11 @@
 package com.javier.todoapp.Models;
 
-import java.util.ArrayList;
+import com.javier.todoapp.Customer.CustomerDTO;
+
+import java.util.List;
 
 public record ReturnRecord(
-  ArrayList<Todo> todos,
+  List<CustomerDTO> todos,
   double nPages,
   double currentPage,
   double avgPriorityAll,

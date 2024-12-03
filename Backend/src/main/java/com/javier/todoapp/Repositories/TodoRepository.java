@@ -1,12 +1,17 @@
 package com.javier.todoapp.Repositories;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import com.javier.todoapp.Customer.CustomerDTO;
+import com.javier.todoapp.Customer.CustomerDTOMapper;
 import com.javier.todoapp.Models.SetDoneDate;
 import com.javier.todoapp.Models.Todo;
 
 public class TodoRepository {
-  private ArrayList<Todo> todos;
+  private List<Todo> todos;
+  private final CustomerDTOMapper customerDTOMapper = new CustomerDTOMapper();
 
   public TodoRepository () {
     this.todos = new ArrayList<Todo>();
@@ -96,7 +101,7 @@ public class TodoRepository {
     }
   }
 
-  public ArrayList<Todo> getTodos () {
-    return this.todos;
+  public List<CustomerDTO> getTodos () {
+    return this.todos.stream().map(todo -> customerDTOMapper.apply(todo)).collect(Collectors.toList());
   }
 }
